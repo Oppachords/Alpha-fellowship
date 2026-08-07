@@ -99,7 +99,7 @@ docs/
 | 5 — Members Portal | ✅ Complete | Dashboard, profile, membership application |
 | 6 — Pastoral Care | ✅ Complete | Prayer & counselling request systems |
 | 7 — Church Operations | ✅ Complete | Events, ministries, campaigns |
-| 8 — Payments | ⏳ Pending | MTN, Airtel, Bank configuration |
+| 8 — Payments | ✅ Complete | Giving page, confirmations, admin payment CMS |
 | 9 — Integrations | ⏳ Pending | YouTube, Cloudinary, Email |
 | 10–14 | ⏳ Pending | Security, content, testing, deployment |
 

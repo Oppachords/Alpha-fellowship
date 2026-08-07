@@ -12,6 +12,7 @@ import {
   Calendar,
   Layers,
   Megaphone,
+  CreditCard,
   LogOut,
   ExternalLink,
 } from "lucide-react";
@@ -60,6 +61,11 @@ const navItems = [
     label: "Campaigns",
     href: `${ADMIN_BASE_PATH}/campaigns`,
     icon: Megaphone,
+  },
+  {
+    label: "Payments",
+    href: `${ADMIN_BASE_PATH}/payments`,
+    icon: CreditCard,
   },
 ];
 
