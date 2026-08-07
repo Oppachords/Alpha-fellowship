@@ -9,6 +9,9 @@ import {
   Users,
   Heart,
   HandHeart,
+  Calendar,
+  Layers,
+  Megaphone,
   LogOut,
   ExternalLink,
 } from "lucide-react";
@@ -42,6 +45,21 @@ const navItems = [
     label: "Counselling",
     href: `${ADMIN_BASE_PATH}/counselling`,
     icon: HandHeart,
+  },
+  {
+    label: "Events",
+    href: `${ADMIN_BASE_PATH}/events`,
+    icon: Calendar,
+  },
+  {
+    label: "Ministries",
+    href: `${ADMIN_BASE_PATH}/ministries`,
+    icon: Layers,
+  },
+  {
+    label: "Campaigns",
+    href: `${ADMIN_BASE_PATH}/campaigns`,
+    icon: Megaphone,
   },
 ];
 

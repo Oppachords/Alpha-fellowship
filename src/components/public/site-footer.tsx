@@ -22,6 +22,12 @@ export function SiteFooter() {
             <Link href="/services" className="hover:text-foreground transition-colors">
               Gatherings
             </Link>
+            <Link href="/events" className="hover:text-foreground transition-colors">
+              Events
+            </Link>
+            <Link href="/ministries" className="hover:text-foreground transition-colors">
+              Ministries
+            </Link>
             <Link href="/contact" className="hover:text-foreground transition-colors">
               Contact
             </Link>

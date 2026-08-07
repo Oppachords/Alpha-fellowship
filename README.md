@@ -98,7 +98,7 @@ docs/
 | 4 — CMS / Admin | ✅ Complete | Auth.js login, admin dashboard, site settings |
 | 5 — Members Portal | ✅ Complete | Dashboard, profile, membership application |
 | 6 — Pastoral Care | ✅ Complete | Prayer & counselling request systems |
-| 7 — Church Operations | ⏳ Pending | Events, ministries, campaigns |
+| 7 — Church Operations | ✅ Complete | Events, ministries, campaigns |
 | 8 — Payments | ⏳ Pending | MTN, Airtel, Bank configuration |
 | 9 — Integrations | ⏳ Pending | YouTube, Cloudinary, Email |
 | 10–14 | ⏳ Pending | Security, content, testing, deployment |

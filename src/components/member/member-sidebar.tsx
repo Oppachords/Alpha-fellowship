@@ -6,6 +6,7 @@ import {
   LayoutDashboard,
   User,
   Calendar,
+  CalendarDays,
   Heart,
   HandHeart,
   LogOut,
@@ -19,6 +20,7 @@ const navItems = [
   { label: "Dashboard", href: MEMBER_BASE_PATH, icon: LayoutDashboard },
   { label: "My Profile", href: `${MEMBER_BASE_PATH}/profile`, icon: User },
   { label: "Gatherings", href: "/services", icon: Calendar, external: true },
+  { label: "Events", href: `${MEMBER_BASE_PATH}/events`, icon: CalendarDays },
   {
     label: "Prayer Requests",
     href: `${MEMBER_BASE_PATH}/prayer`,
