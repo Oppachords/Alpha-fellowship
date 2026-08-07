@@ -3,7 +3,7 @@
 import { AuthError } from "next-auth";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { signIn, signOut } from "@/lib/auth";
-import { ADMIN_BASE_PATH } from "@/lib/constants/admin";
+import { AUTH_REDIRECT_PATH } from "@/lib/constants/auth";
 
 export async function loginAction(
   _prevState: { error?: string } | undefined,
@@ -13,7 +13,7 @@ export async function loginAction(
     await signIn("credentials", {
       email: formData.get("email"),
       password: formData.get("password"),
-      redirectTo: ADMIN_BASE_PATH,
+      redirectTo: AUTH_REDIRECT_PATH,
     });
   } catch (error) {
     if (isRedirectError(error)) {

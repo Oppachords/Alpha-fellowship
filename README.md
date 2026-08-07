@@ -82,7 +82,7 @@ docs/
 | 2 — Foundation | ✅ Complete | Next.js, Prisma schema, env config |
 | 3 — Public Website | ✅ Complete | Homepage + About, Gatherings, Contact, Give |
 | 4 — CMS / Admin | ✅ Complete | Auth.js login, admin dashboard, site settings |
-| 5 — Members Portal | ⏳ Pending | Registration, profiles, dashboard |
+| 5 — Members Portal | ✅ Complete | Dashboard, profile, membership application |
 | 6 — Pastoral Care | ⏳ Pending | Prayer & counselling systems |
 | 7 — Church Operations | ⏳ Pending | Events, ministries, campaigns |
 | 8 — Payments | ⏳ Pending | MTN, Airtel, Bank configuration |
