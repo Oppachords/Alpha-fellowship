@@ -81,7 +81,7 @@ docs/
 | 1 — Design System | ✅ Complete | Brand tokens, typography, components |
 | 2 — Foundation | ✅ Complete | Next.js, Prisma schema, env config |
 | 3 — Public Website | ✅ Complete | Homepage + About, Gatherings, Contact, Give |
-| 4 — CMS / Admin | ⏳ Pending | Dashboard, content management |
+| 4 — CMS / Admin | ✅ Complete | Auth.js login, admin dashboard, site settings |
 | 5 — Members Portal | ⏳ Pending | Registration, profiles, dashboard |
 | 6 — Pastoral Care | ⏳ Pending | Prayer & counselling systems |
 | 7 — Church Operations | ⏳ Pending | Events, ministries, campaigns |
@@ -99,5 +99,7 @@ Optimized for **Vercel** + **Neon** + **Cloudinary**:
 
 1. Push to GitHub
 2. Connect to Vercel
-3. Set environment variables in Vercel dashboard
-4. Run `npx prisma migrate deploy` for production database
+3. Set environment variables in Vercel dashboard (`DATABASE_URL`, `AUTH_SECRET`, `AUTH_URL`)
+4. Run `npx prisma migrate deploy` against your Neon database
+5. Run `npm run db:seed` to create the admin user and initial content
+6. Sign in at `/login` with the seeded admin credentials (change password after first login)

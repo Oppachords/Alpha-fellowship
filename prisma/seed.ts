@@ -1,6 +1,12 @@
-import { PrismaClient, MembershipStatus } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+import pg from "pg";
+import bcrypt from "bcryptjs";
+import "dotenv/config";
 
-const prisma = new PrismaClient();
+const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({ adapter });
 
 async function main() {
   console.log("🌱 Seeding Alpha Fellowship database...");
@@ -134,6 +140,45 @@ async function main() {
       create: role,
     });
   }
+
+  // Super-admin user (change password after first login)
+  const adminEmail =
+    process.env.SEED_ADMIN_EMAIL ?? "admin@alphafellowshipug.com";
+  const adminPassword = process.env.SEED_ADMIN_PASSWORD ?? "ChangeMe123!";
+  const passwordHash = await bcrypt.hash(adminPassword, 12);
+
+  const adminUser = await prisma.user.upsert({
+    where: { email: adminEmail },
+    update: { passwordHash, isActive: true },
+    create: {
+      email: adminEmail,
+      name: "Alpha Fellowship Admin",
+      passwordHash,
+      isActive: true,
+    },
+  });
+
+  const superAdminRole = await prisma.role.findUnique({
+    where: { slug: "super-admin" },
+  });
+
+  if (superAdminRole) {
+    await prisma.userRole.upsert({
+      where: {
+        userId_roleId: {
+          userId: adminUser.id,
+          roleId: superAdminRole.id,
+        },
+      },
+      update: {},
+      create: {
+        userId: adminUser.id,
+        roleId: superAdminRole.id,
+      },
+    });
+  }
+
+  console.log(`👤 Admin user seeded: ${adminEmail}`);
 
   // Programs (verified)
   const programs = [
