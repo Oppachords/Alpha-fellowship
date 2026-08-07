@@ -1,8 +1,10 @@
 import type { NextAuthConfig } from "next-auth";
+import { ADMIN_LOGIN_PATH } from "@/lib/constants/admin";
+import { MEMBER_LOGIN_PATH } from "@/lib/constants/member";
 
 export const authConfig = {
   pages: {
-    signIn: "/login",
+    signIn: MEMBER_LOGIN_PATH,
   },
   trustHost: true,
   session: {
@@ -26,3 +28,5 @@ export const authConfig = {
   },
   providers: [],
 } satisfies NextAuthConfig;
+
+export { ADMIN_LOGIN_PATH, MEMBER_LOGIN_PATH };

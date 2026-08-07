@@ -1,21 +1,75 @@
 "use server";
 
-export async function submitMembershipApplicationAction(
+import bcrypt from "bcryptjs";
+import { db } from "@/lib/db";
+
+export async function registerMemberAction(
   _prevState: { success?: boolean; error?: string } | undefined,
   formData: FormData
 ) {
   const name = (formData.get("name") as string)?.trim();
-  const email = (formData.get("email") as string)?.trim();
+  const email = (formData.get("email") as string)?.trim().toLowerCase();
   const phone = (formData.get("phone") as string)?.trim();
+  const password = formData.get("password") as string;
+  const confirmPassword = formData.get("confirmPassword") as string;
   const message = (formData.get("message") as string)?.trim();
 
-  if (!name || !email) {
-    return { error: "Name and email are required." };
+  if (!name || !email || !password) {
+    return { error: "Name, email, and password are required." };
   }
 
-  // Database integration will persist MembershipApplication records in a later phase.
-  void phone;
-  void message;
+  if (password.length < 8) {
+    return { error: "Password must be at least 8 characters." };
+  }
 
-  return { success: true };
+  if (password !== confirmPassword) {
+    return { error: "Passwords do not match." };
+  }
+
+  try {
+    const existing = await db.user.findUnique({ where: { email } });
+    if (existing) {
+      return { error: "An account with this email already exists." };
+    }
+
+    const memberRole = await db.role.findUnique({ where: { slug: "member" } });
+    if (!memberRole) {
+      return { error: "Member role is not configured. Run database seed first." };
+    }
+
+    const passwordHash = await bcrypt.hash(password, 12);
+
+    await db.user.create({
+      data: {
+        name,
+        email,
+        phone: phone || null,
+        passwordHash,
+        isActive: false,
+        roles: {
+          create: { roleId: memberRole.id },
+        },
+        member: {
+          create: { status: "VISITOR" },
+        },
+      },
+    });
+
+    await db.membershipApplication.create({
+      data: {
+        name,
+        email,
+        phone: phone || null,
+        message: message || null,
+        status: "pending",
+      },
+    });
+
+    return { success: true };
+  } catch {
+    return {
+      error:
+        "Registration is not available yet. Database setup is required — please try again later or contact the church office.",
+    };
+  }
 }

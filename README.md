@@ -102,4 +102,4 @@ Optimized for **Vercel** + **Neon** + **Cloudinary**:
 3. Set environment variables in Vercel dashboard (`DATABASE_URL`, `AUTH_SECRET`, `AUTH_URL`)
 4. Run `npx prisma migrate deploy` against your Neon database
 5. Run `npm run db:seed` to create the admin user and initial content
-6. Sign in at `/login`, then go to `/church/admin` with the seeded admin credentials (change password after first login)
+6. Staff sign in at `/church/admin/login` (hidden URL). Members use `/members` on the public site to register or sign in at `/member/login`.

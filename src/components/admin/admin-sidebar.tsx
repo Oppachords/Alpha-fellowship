@@ -6,6 +6,7 @@ import {
   LayoutDashboard,
   Settings,
   MessageSquare,
+  Users,
   LogOut,
   ExternalLink,
 } from "lucide-react";
@@ -24,6 +25,11 @@ const navItems = [
     label: "Messages",
     href: `${ADMIN_BASE_PATH}/messages`,
     icon: MessageSquare,
+  },
+  {
+    label: "Members",
+    href: `${ADMIN_BASE_PATH}/members`,
+    icon: Users,
   },
 ];
 

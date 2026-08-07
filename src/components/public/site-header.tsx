@@ -17,6 +17,7 @@ const navLinks = [
   { label: "About", href: "/about" },
   { label: "Gatherings", href: "/services" },
   { label: "Community", href: "/#community" },
+  { label: "Members", href: "/members" },
 ];
 
 export function SiteHeader() {

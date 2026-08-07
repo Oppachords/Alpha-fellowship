@@ -28,11 +28,8 @@ export function SiteFooter() {
             <Link href="/give" className="hover:text-foreground transition-colors">
               Give
             </Link>
-            <Link href="/member/register" className="hover:text-foreground transition-colors">
-              Join
-            </Link>
-            <Link href="/login" className="hover:text-foreground transition-colors">
-              Member Login
+            <Link href="/members" className="hover:text-foreground transition-colors">
+              Members
             </Link>
           </div>
         </div>

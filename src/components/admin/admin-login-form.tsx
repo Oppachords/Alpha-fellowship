@@ -1,13 +1,13 @@
 "use client";
 
 import { useActionState } from "react";
-import { loginAction } from "@/lib/actions/auth";
+import { adminLoginAction } from "@/lib/actions/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-export function LoginForm() {
-  const [state, formAction, pending] = useActionState(loginAction, undefined);
+export function AdminLoginForm() {
+  const [state, formAction, pending] = useActionState(adminLoginAction, undefined);
 
   return (
     <form action={formAction} className="space-y-5">
@@ -19,7 +19,6 @@ export function LoginForm() {
           type="email"
           required
           autoComplete="email"
-          placeholder="admin@alphafellowshipug.com"
         />
       </div>
       <div className="space-y-2">
@@ -30,7 +29,6 @@ export function LoginForm() {
           type="password"
           required
           autoComplete="current-password"
-          placeholder="••••••••"
         />
       </div>
       {state?.error && (
