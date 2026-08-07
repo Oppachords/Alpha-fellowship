@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
+import { ADMIN_BASE_PATH } from "@/lib/constants/admin";
 import { hasAdminRole } from "@/lib/auth/permissions";
 import { db } from "@/lib/db";
 
@@ -44,7 +45,7 @@ export async function updateChurchProfileAction(
       },
     });
 
-    revalidatePath("/admin/settings");
+    revalidatePath(`${ADMIN_BASE_PATH}/settings`);
     revalidatePath("/");
     revalidatePath("/about");
 

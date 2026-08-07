@@ -2,6 +2,7 @@ import Link from "next/link";
 import { AdminHeader } from "@/components/admin/admin-header";
 import { db } from "@/lib/db";
 import { churchContent } from "@/lib/content/church-content";
+import { ADMIN_BASE_PATH } from "@/lib/constants/admin";
 import {
   MessageSquare,
   FileText,
@@ -39,25 +40,25 @@ const statCards = [
     key: "unreadMessages",
     label: "Unread messages",
     icon: MessageSquare,
-    href: "/admin/messages",
+    href: `${ADMIN_BASE_PATH}/messages`,
   },
   {
     key: "publishedPosts",
     label: "Published posts",
     icon: FileText,
-    href: "/admin/settings",
+    href: `${ADMIN_BASE_PATH}/settings`,
   },
   {
     key: "upcomingEvents",
     label: "Upcoming events",
     icon: Calendar,
-    href: "/admin/settings",
+    href: `${ADMIN_BASE_PATH}/settings`,
   },
   {
     key: "members",
     label: "Active members",
     icon: Users,
-    href: "/admin/settings",
+    href: `${ADMIN_BASE_PATH}/settings`,
   },
 ] as const;
 
@@ -104,14 +105,14 @@ export default async function AdminDashboardPage() {
             </p>
             <div className="space-y-2">
               <Link
-                href="/admin/settings"
+                href={`${ADMIN_BASE_PATH}/settings`}
                 className="flex items-center justify-between rounded-lg border border-border px-4 py-3 text-sm hover:bg-muted transition-colors"
               >
                 Edit church profile
                 <ArrowRight className="h-4 w-4 text-muted-foreground" />
               </Link>
               <Link
-                href="/admin/messages"
+                href={`${ADMIN_BASE_PATH}/messages`}
                 className="flex items-center justify-between rounded-lg border border-border px-4 py-3 text-sm hover:bg-muted transition-colors"
               >
                 View contact messages

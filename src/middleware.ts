@@ -1,12 +1,13 @@
 import NextAuth from "next-auth";
 import { authConfig } from "@/lib/auth/auth.config";
+import { ADMIN_BASE_PATH } from "@/lib/constants/admin";
 
 const { auth } = NextAuth(authConfig);
 
 export default auth((req) => {
   const isLoggedIn = !!req.auth;
   const { pathname } = req.nextUrl;
-  const isAdminRoute = pathname.startsWith("/admin");
+  const isAdminRoute = pathname.startsWith(ADMIN_BASE_PATH);
   const isLoginPage = pathname === "/login";
 
   if (isAdminRoute) {
@@ -25,10 +26,10 @@ export default auth((req) => {
   }
 
   if (isLoginPage && isLoggedIn) {
-    return Response.redirect(new URL("/admin", req.nextUrl));
+    return Response.redirect(new URL(ADMIN_BASE_PATH, req.nextUrl));
   }
 });
 
 export const config = {
-  matcher: ["/admin/:path*", "/login"],
+  matcher: ["/church/admin/:path*", "/login"],
 };

@@ -10,12 +10,21 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { signOutAction } from "@/lib/actions/auth";
+import { ADMIN_BASE_PATH } from "@/lib/constants/admin";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
-  { label: "Site Settings", href: "/admin/settings", icon: Settings },
-  { label: "Messages", href: "/admin/messages", icon: MessageSquare },
+  { label: "Dashboard", href: ADMIN_BASE_PATH, icon: LayoutDashboard },
+  {
+    label: "Site Settings",
+    href: `${ADMIN_BASE_PATH}/settings`,
+    icon: Settings,
+  },
+  {
+    label: "Messages",
+    href: `${ADMIN_BASE_PATH}/messages`,
+    icon: MessageSquare,
+  },
 ];
 
 export function AdminSidebar() {
@@ -33,8 +42,8 @@ export function AdminSidebar() {
       <nav className="flex-1 space-y-1 px-3 py-4">
         {navItems.map((item) => {
           const isActive =
-            item.href === "/admin"
-              ? pathname === "/admin"
+            item.href === ADMIN_BASE_PATH
+              ? pathname === ADMIN_BASE_PATH
               : pathname.startsWith(item.href);
 
           return (
