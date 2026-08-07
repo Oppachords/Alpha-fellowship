@@ -2,7 +2,7 @@ import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { MemberHeader } from "@/components/member/member-header";
 import { churchContent } from "@/lib/content/church-content";
-import { Calendar, User, Heart, ArrowRight } from "lucide-react";
+import { Calendar, User, Heart, HandHeart, ArrowRight } from "lucide-react";
 
 function formatTime(time: string) {
   const [hours, minutes] = time.split(":").map(Number);
@@ -99,13 +99,22 @@ export default async function MemberDashboardPage() {
                 Update my profile
                 <ArrowRight className="h-4 w-4 ml-auto text-muted-foreground" />
               </Link>
-              <div className="flex items-center gap-3 rounded-lg border border-border px-4 py-3 text-sm opacity-60">
+              <Link
+                href="/member/prayer"
+                className="flex items-center gap-3 rounded-lg border border-border px-4 py-3 text-sm hover:bg-muted transition-colors"
+              >
                 <Heart className="h-4 w-4 text-primary" />
                 Submit a prayer request
-                <span className="ml-auto text-[10px] uppercase tracking-wide text-muted-foreground">
-                  Phase 6
-                </span>
-              </div>
+                <ArrowRight className="h-4 w-4 ml-auto text-muted-foreground" />
+              </Link>
+              <Link
+                href="/member/counselling"
+                className="flex items-center gap-3 rounded-lg border border-border px-4 py-3 text-sm hover:bg-muted transition-colors"
+              >
+                <HandHeart className="h-4 w-4 text-primary" />
+                Request counselling
+                <ArrowRight className="h-4 w-4 ml-auto text-muted-foreground" />
+              </Link>
             </div>
           </div>
         </div>

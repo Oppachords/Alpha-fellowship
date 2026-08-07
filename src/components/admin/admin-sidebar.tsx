@@ -7,6 +7,8 @@ import {
   Settings,
   MessageSquare,
   Users,
+  Heart,
+  HandHeart,
   LogOut,
   ExternalLink,
 } from "lucide-react";
@@ -30,6 +32,16 @@ const navItems = [
     label: "Members",
     href: `${ADMIN_BASE_PATH}/members`,
     icon: Users,
+  },
+  {
+    label: "Prayer",
+    href: `${ADMIN_BASE_PATH}/prayer`,
+    icon: Heart,
+  },
+  {
+    label: "Counselling",
+    href: `${ADMIN_BASE_PATH}/counselling`,
+    icon: HandHeart,
   },
 ];
 

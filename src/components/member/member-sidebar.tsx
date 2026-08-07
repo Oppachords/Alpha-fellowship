@@ -7,6 +7,7 @@ import {
   User,
   Calendar,
   Heart,
+  HandHeart,
   LogOut,
   ExternalLink,
 } from "lucide-react";
@@ -22,7 +23,11 @@ const navItems = [
     label: "Prayer Requests",
     href: `${MEMBER_BASE_PATH}/prayer`,
     icon: Heart,
-    comingSoon: true,
+  },
+  {
+    label: "Counselling",
+    href: `${MEMBER_BASE_PATH}/counselling`,
+    icon: HandHeart,
   },
 ];
 
@@ -50,21 +55,8 @@ export function MemberSidebar() {
             "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
             isActive
               ? "bg-primary/10 text-primary"
-              : "text-muted-foreground hover:bg-muted hover:text-foreground",
-            item.comingSoon && "opacity-60 cursor-not-allowed"
+              : "text-muted-foreground hover:bg-muted hover:text-foreground"
           );
-
-          if (item.comingSoon) {
-            return (
-              <div key={item.label} className={className}>
-                <item.icon className="h-4 w-4 shrink-0" />
-                {item.label}
-                <span className="ml-auto text-[10px] uppercase tracking-wide">
-                  Soon
-                </span>
-              </div>
-            );
-          }
 
           if (item.external) {
             return (

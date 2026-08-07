@@ -72,7 +72,7 @@ export default async function AdminDashboardPage() {
         {!stats.connected && (
           <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
             Database not connected. Set <code className="font-mono">DATABASE_URL</code>{" "}
-            in Vercel, run{" "}
+            and <code className="font-mono">DIRECT_URL</code> from Supabase in Vercel, run{" "}
             <code className="font-mono">npx prisma migrate deploy</code>, then{" "}
             <code className="font-mono">npm run db:seed</code> to enable live CMS data.
           </div>

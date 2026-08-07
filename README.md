@@ -6,7 +6,7 @@ A production-ready church CMS, public website, and members portal for **Alpha Fe
 
 - **Next.js 16** (App Router, TypeScript, Server Components)
 - **Tailwind CSS v4** + **shadcn/ui**
-- **PostgreSQL** (Neon) + **Prisma ORM**
+- **PostgreSQL** (Supabase) + **Prisma ORM**
 - **Auth.js** (email/password + Google OAuth)
 - **Cloudinary** (media storage)
 - **YouTube Data API** (live streams & sermons)
@@ -28,17 +28,32 @@ cp .env.example .env
 ```
 
 Required for local development:
-- `DATABASE_URL` — Neon PostgreSQL connection string
+- `DATABASE_URL` — Supabase pooler connection string (port 6543, for runtime)
+- `DIRECT_URL` — Supabase direct connection string (port 5432, for migrations)
 - `AUTH_SECRET` — Generate with `openssl rand -base64 32`
 
-### 3. Set up the database
+### 3. Set up Supabase
+
+1. Create a project at [supabase.com](https://supabase.com)
+2. Go to **Project Settings → Database**
+3. Copy the **Transaction pooler** URI → `DATABASE_URL`
+4. Copy the **Direct connection** URI → `DIRECT_URL`
+
+### 4. Set up the database
+
+```bash
+npx prisma migrate deploy
+npm run db:seed
+```
+
+For local development with migration creation:
 
 ```bash
 npx prisma migrate dev --name init
-npx prisma db seed
+npm run db:seed
 ```
 
-### 4. Run the development server
+### 5. Run the development server
 
 ```bash
 npm run dev
@@ -52,9 +67,8 @@ Open [http://localhost:3000](http://localhost:3000).
 src/
 ├── app/
 │   ├── (public)/          # Public website pages
-│   ├── (auth)/            # Login, register, password reset
-│   ├── (member)/          # Members portal
-│   ├── (admin)/           # Admin dashboard & CMS
+│   ├── member/            # Members portal
+│   ├── church/admin/      # Admin dashboard & CMS
 │   └── api/               # Route handlers
 ├── components/
 │   ├── public/            # Public site components
@@ -83,7 +97,7 @@ docs/
 | 3 — Public Website | ✅ Complete | Homepage + About, Gatherings, Contact, Give |
 | 4 — CMS / Admin | ✅ Complete | Auth.js login, admin dashboard, site settings |
 | 5 — Members Portal | ✅ Complete | Dashboard, profile, membership application |
-| 6 — Pastoral Care | ⏳ Pending | Prayer & counselling systems |
+| 6 — Pastoral Care | ✅ Complete | Prayer & counselling request systems |
 | 7 — Church Operations | ⏳ Pending | Events, ministries, campaigns |
 | 8 — Payments | ⏳ Pending | MTN, Airtel, Bank configuration |
 | 9 — Integrations | ⏳ Pending | YouTube, Cloudinary, Email |
@@ -95,11 +109,11 @@ All Alpha Fellowship organizational information is sourced from [alphafellowship
 
 ## Deployment
 
-Optimized for **Vercel** + **Neon** + **Cloudinary**:
+Optimized for **Vercel** + **Supabase** + **Cloudinary**:
 
 1. Push to GitHub
 2. Connect to Vercel
-3. Set environment variables in Vercel dashboard (`DATABASE_URL`, `AUTH_SECRET`, `AUTH_URL`)
-4. Run `npx prisma migrate deploy` against your Neon database
+3. Set environment variables in Vercel dashboard (`DATABASE_URL`, `DIRECT_URL`, `AUTH_SECRET`, `AUTH_URL`)
+4. Run `npx prisma migrate deploy` against your Supabase database (uses `DIRECT_URL`)
 5. Run `npm run db:seed` to create the admin user and initial content
 6. Staff sign in at `/church/admin/login` (hidden URL). Members use `/members` on the public site to register or sign in at `/member/login`.
