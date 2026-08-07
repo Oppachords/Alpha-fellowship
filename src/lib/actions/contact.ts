@@ -2,20 +2,44 @@
 
 import { notifyStaff } from "@/lib/email/send-email";
 import { contactMessageEmail } from "@/lib/email/templates";
+import { guardPublicForm } from "@/lib/security/public-form-guard";
+import {
+  emailSchema,
+  firstZodError,
+  messageSchema,
+  nameSchema,
+  phoneSchema,
+} from "@/lib/validations/common";
 import { db } from "@/lib/db";
+import { z } from "zod";
+
+const contactSchema = z.object({
+  name: nameSchema,
+  email: emailSchema,
+  phone: phoneSchema,
+  message: messageSchema,
+});
 
 export async function submitContactAction(
   _prevState: { success?: boolean; error?: string } | undefined,
   formData: FormData
 ) {
-  const name = (formData.get("name") as string)?.trim();
-  const email = (formData.get("email") as string)?.trim();
-  const phone = (formData.get("phone") as string)?.trim();
-  const message = (formData.get("message") as string)?.trim();
+  const guard = await guardPublicForm(formData, { scope: "contact", limit: 8 });
+  if (guard?.honeypot) return { success: true };
+  if (guard?.error) return { error: guard.error };
 
-  if (!name || !email || !message) {
-    return { error: "Name, email, and message are required." };
+  const parsed = contactSchema.safeParse({
+    name: formData.get("name"),
+    email: formData.get("email"),
+    phone: formData.get("phone") ?? "",
+    message: formData.get("message"),
+  });
+
+  if (!parsed.success) {
+    return { error: firstZodError(parsed.error) };
   }
+
+  const { name, email, phone, message } = parsed.data;
 
   try {
     await db.contactMessage.create({

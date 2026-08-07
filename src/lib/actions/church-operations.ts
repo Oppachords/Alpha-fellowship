@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import { hasAdminRole } from "@/lib/auth/permissions";
+import { createAuditLog } from "@/lib/security/audit-log";
 import { db } from "@/lib/db";
 
 function slugify(text: string) {
@@ -15,9 +16,9 @@ function slugify(text: string) {
 async function requireAdmin() {
   const session = await auth();
   if (!session?.user || !hasAdminRole(session.user.roles)) {
-    return { error: "Unauthorized." as const };
+    return { error: "Unauthorized." as const, session: null };
   }
-  return null;
+  return { error: null, session };
 }
 
 export async function createEventAction(
@@ -25,7 +26,7 @@ export async function createEventAction(
   formData: FormData
 ) {
   const authResult = await requireAdmin();
-  if (authResult) return authResult;
+  if (authResult.error) return { error: authResult.error };
 
   const title = (formData.get("title") as string)?.trim();
   const description = (formData.get("description") as string)?.trim();
@@ -38,7 +39,7 @@ export async function createEventAction(
   }
 
   try {
-    await db.event.create({
+    const event = await db.event.create({
       data: {
         title,
         slug: `${slugify(title)}-${Date.now()}`,
@@ -49,6 +50,14 @@ export async function createEventAction(
         isPublished: true,
         status: "upcoming",
       },
+    });
+
+    await createAuditLog({
+      userId: authResult.session!.user.id,
+      action: "create",
+      resource: "event",
+      resourceId: event.id,
+      details: { title },
     });
 
     revalidatePath("/events");
@@ -64,7 +73,7 @@ export async function createMinistryAction(
   formData: FormData
 ) {
   const authResult = await requireAdmin();
-  if (authResult) return authResult;
+  if (authResult.error) return { error: authResult.error };
 
   const name = (formData.get("name") as string)?.trim();
   const description = (formData.get("description") as string)?.trim();
@@ -76,7 +85,7 @@ export async function createMinistryAction(
   }
 
   try {
-    await db.ministry.create({
+    const ministry = await db.ministry.create({
       data: {
         name,
         slug: slugify(name),
@@ -85,6 +94,14 @@ export async function createMinistryAction(
         location: location || null,
         isPublished: true,
       },
+    });
+
+    await createAuditLog({
+      userId: authResult.session!.user.id,
+      action: "create",
+      resource: "ministry",
+      resourceId: ministry.id,
+      details: { name },
     });
 
     revalidatePath("/ministries");
@@ -100,7 +117,7 @@ export async function createCampaignAction(
   formData: FormData
 ) {
   const authResult = await requireAdmin();
-  if (authResult) return authResult;
+  if (authResult.error) return { error: authResult.error };
 
   const title = (formData.get("title") as string)?.trim();
   const description = (formData.get("description") as string)?.trim();
@@ -111,7 +128,7 @@ export async function createCampaignAction(
   }
 
   try {
-    await db.campaign.create({
+    const campaign = await db.campaign.create({
       data: {
         title,
         slug: slugify(title),
@@ -120,6 +137,14 @@ export async function createCampaignAction(
         isPublished: true,
         status: "active",
       },
+    });
+
+    await createAuditLog({
+      userId: authResult.session!.user.id,
+      action: "create",
+      resource: "campaign",
+      resourceId: campaign.id,
+      details: { title },
     });
 
     revalidatePath("/campaigns");

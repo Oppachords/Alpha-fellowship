@@ -1,4 +1,5 @@
 import NextAuth from "next-auth";
+import { NextResponse } from "next/server";
 import { authConfig } from "@/lib/auth/auth.config";
 import {
   ADMIN_BASE_PATH,
@@ -12,6 +13,12 @@ import {
 
 const { auth } = NextAuth(authConfig);
 
+const ADMIN_ROLES = ["super-admin", "admin", "editor", "pastor"];
+
+function hasAdminAccess(roles: string[] = []) {
+  return roles.some((role) => ADMIN_ROLES.includes(role));
+}
+
 export default auth((req) => {
   const isLoggedIn = !!req.auth;
   const { pathname } = req.nextUrl;
@@ -19,18 +26,22 @@ export default auth((req) => {
   const isMemberRoute = isMemberProtectedPath(pathname);
   const isMemberLoginPage = pathname === MEMBER_LOGIN_PATH;
   const isAdminLoginPage = pathname === ADMIN_LOGIN_PATH;
+  const isAdminApiRoute = pathname.startsWith("/api/admin/");
+  const roles = req.auth?.user?.roles ?? [];
+
+  if (isAdminApiRoute) {
+    if (!isLoggedIn || !hasAdminAccess(roles)) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    return;
+  }
 
   if (isAdminRoute) {
     if (!isLoggedIn) {
       return Response.redirect(new URL(ADMIN_LOGIN_PATH, req.nextUrl));
     }
 
-    const roles = req.auth?.user?.roles ?? [];
-    const canAccessAdmin = roles.some((role) =>
-      ["super-admin", "admin", "editor", "pastor"].includes(role)
-    );
-
-    if (!canAccessAdmin) {
+    if (!hasAdminAccess(roles)) {
       return Response.redirect(new URL("/", req.nextUrl));
     }
   }
@@ -40,30 +51,24 @@ export default auth((req) => {
       return Response.redirect(new URL(MEMBER_LOGIN_PATH, req.nextUrl));
     }
 
-    const roles = req.auth?.user?.roles ?? [];
     if (!roles.includes("member")) {
       return Response.redirect(new URL("/", req.nextUrl));
     }
   }
 
   if (isMemberLoginPage && isLoggedIn) {
-    const roles = req.auth?.user?.roles ?? [];
     if (roles.includes("member") && req.auth?.user) {
       return Response.redirect(new URL("/member", req.nextUrl));
     }
   }
 
   if (isAdminLoginPage && isLoggedIn) {
-    const roles = req.auth?.user?.roles ?? [];
-    if (roles.some((role) => ["super-admin", "admin", "editor", "pastor"].includes(role))) {
+    if (hasAdminAccess(roles)) {
       return Response.redirect(new URL(ADMIN_BASE_PATH, req.nextUrl));
     }
   }
 });
 
 export const config = {
-  matcher: [
-    "/church/admin/:path*",
-    "/member/:path*",
-  ],
+  matcher: ["/church/admin/:path*", "/member/:path*", "/api/admin/:path*"],
 };

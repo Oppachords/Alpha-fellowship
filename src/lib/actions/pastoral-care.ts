@@ -1,8 +1,17 @@
 "use server";
 
+import { z } from "zod";
 import { notifyStaff } from "@/lib/email/send-email";
 import { prayerRequestEmail, counsellingRequestEmail } from "@/lib/email/templates";
 import { auth } from "@/lib/auth";
+import { guardPublicForm } from "@/lib/security/public-form-guard";
+import {
+  emailSchema,
+  firstZodError,
+  messageSchema,
+  nameSchema,
+  phoneSchema,
+} from "@/lib/validations/common";
 import { db } from "@/lib/db";
 
 const PRAYER_CATEGORIES = [
@@ -13,31 +22,54 @@ const PRAYER_CATEGORIES = [
   "other",
 ] as const;
 
+const prayerSchema = z.object({
+  name: nameSchema,
+  email: emailSchema,
+  phone: phoneSchema,
+  request: messageSchema.max(3000),
+  category: z.enum(PRAYER_CATEGORIES),
+  preferredContact: z.string().trim().max(120).optional().or(z.literal("")),
+  isAnonymous: z.boolean(),
+});
+
+const counsellingSchema = z.object({
+  name: nameSchema,
+  email: emailSchema,
+  phone: phoneSchema,
+  preferredContact: z.string().trim().max(120).optional().or(z.literal("")),
+  preferredDateTime: z.string().trim().max(120).optional().or(z.literal("")),
+  reason: z.string().trim().max(500).optional().or(z.literal("")),
+  message: z.string().trim().max(3000).optional().or(z.literal("")),
+});
+
 export async function submitPrayerRequestAction(
   _prevState: { success?: boolean; error?: string } | undefined,
   formData: FormData
 ) {
-  const session = await auth();
-  const name = (formData.get("name") as string)?.trim();
-  const email = (formData.get("email") as string)?.trim();
-  const phone = (formData.get("phone") as string)?.trim();
-  const request = (formData.get("request") as string)?.trim();
-  const category = (formData.get("category") as string)?.trim() || "personal";
-  const preferredContact = (formData.get("preferredContact") as string)?.trim();
-  const isAnonymous = formData.get("isAnonymous") === "on";
-  const hasConsent = formData.get("hasConsent") === "on";
+  const guard = await guardPublicForm(formData, { scope: "prayer-request", limit: 6 });
+  if (guard?.honeypot) return { success: true };
+  if (guard?.error) return { error: guard.error };
 
-  if (!name || !email || !request) {
-    return { error: "Name, email, and prayer request are required." };
-  }
-
-  if (!hasConsent) {
+  if (formData.get("hasConsent") !== "on") {
     return { error: "Please consent to pastoral follow-up." };
   }
 
-  if (!PRAYER_CATEGORIES.includes(category as (typeof PRAYER_CATEGORIES)[number])) {
-    return { error: "Please select a valid category." };
+  const session = await auth();
+  const parsed = prayerSchema.safeParse({
+    name: formData.get("name"),
+    email: formData.get("email"),
+    phone: formData.get("phone") ?? "",
+    request: formData.get("request"),
+    category: (formData.get("category") as string)?.trim() || "personal",
+    preferredContact: formData.get("preferredContact") ?? "",
+    isAnonymous: formData.get("isAnonymous") === "on",
+  });
+
+  if (!parsed.success) {
+    return { error: firstZodError(parsed.error) };
   }
+
+  const data = parsed.data;
 
   try {
     let memberId: string | undefined;
@@ -51,24 +83,24 @@ export async function submitPrayerRequestAction(
     await db.prayerRequest.create({
       data: {
         memberId,
-        name: isAnonymous ? "Anonymous" : name,
-        email,
-        phone: phone || null,
-        request,
-        category,
-        preferredContact: preferredContact || null,
-        isAnonymous,
-        hasConsent,
+        name: data.isAnonymous ? "Anonymous" : data.name,
+        email: data.email,
+        phone: data.phone || null,
+        request: data.request,
+        category: data.category,
+        preferredContact: data.preferredContact || null,
+        isAnonymous: data.isAnonymous,
+        hasConsent: true,
       },
     });
 
     await notifyStaff(
       "New prayer request",
       prayerRequestEmail({
-        name: isAnonymous ? "Anonymous" : name,
-        email,
-        category,
-        request,
+        name: data.isAnonymous ? "Anonymous" : data.name,
+        email: data.email,
+        category: data.category,
+        request: data.request,
       })
     );
 
@@ -85,23 +117,30 @@ export async function submitCounsellingRequestAction(
   _prevState: { success?: boolean; error?: string } | undefined,
   formData: FormData
 ) {
-  const session = await auth();
-  const name = (formData.get("name") as string)?.trim();
-  const email = (formData.get("email") as string)?.trim();
-  const phone = (formData.get("phone") as string)?.trim();
-  const preferredContact = (formData.get("preferredContact") as string)?.trim();
-  const preferredDateTime = (formData.get("preferredDateTime") as string)?.trim();
-  const reason = (formData.get("reason") as string)?.trim();
-  const message = (formData.get("message") as string)?.trim();
-  const hasConsent = formData.get("hasConsent") === "on";
+  const guard = await guardPublicForm(formData, { scope: "counselling-request", limit: 6 });
+  if (guard?.honeypot) return { success: true };
+  if (guard?.error) return { error: guard.error };
 
-  if (!name || !email) {
-    return { error: "Name and email are required." };
-  }
-
-  if (!hasConsent) {
+  if (formData.get("hasConsent") !== "on") {
     return { error: "Please consent to pastoral follow-up." };
   }
+
+  const session = await auth();
+  const parsed = counsellingSchema.safeParse({
+    name: formData.get("name"),
+    email: formData.get("email"),
+    phone: formData.get("phone") ?? "",
+    preferredContact: formData.get("preferredContact") ?? "",
+    preferredDateTime: formData.get("preferredDateTime") ?? "",
+    reason: formData.get("reason") ?? "",
+    message: formData.get("message") ?? "",
+  });
+
+  if (!parsed.success) {
+    return { error: firstZodError(parsed.error) };
+  }
+
+  const data = parsed.data;
 
   try {
     let memberId: string | undefined;
@@ -115,20 +154,25 @@ export async function submitCounsellingRequestAction(
     await db.counsellingRequest.create({
       data: {
         memberId,
-        name,
-        email,
-        phone: phone || null,
-        preferredContact: preferredContact || null,
-        preferredDateTime: preferredDateTime || null,
-        reason: reason || null,
-        message: message || null,
-        hasConsent,
+        name: data.name,
+        email: data.email,
+        phone: data.phone || null,
+        preferredContact: data.preferredContact || null,
+        preferredDateTime: data.preferredDateTime || null,
+        reason: data.reason || null,
+        message: data.message || null,
+        hasConsent: true,
       },
     });
 
     await notifyStaff(
       "New counselling request",
-      counsellingRequestEmail({ name, email, phone, message: message ?? reason })
+      counsellingRequestEmail({
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        message: data.message ?? data.reason,
+      })
     );
 
     return { success: true };

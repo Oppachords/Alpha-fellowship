@@ -5,6 +5,9 @@ import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { signIn, signOut } from "@/lib/auth";
 import { ADMIN_BASE_PATH } from "@/lib/constants/admin";
 import { MEMBER_BASE_PATH } from "@/lib/constants/member";
+import { getClientIp } from "@/lib/security/get-client-ip";
+import { enforceRateLimit } from "@/lib/security/rate-limit";
+import { emailSchema, firstZodError } from "@/lib/validations/common";
 import { db } from "@/lib/db";
 
 async function checkPendingMember(email: string) {
@@ -27,20 +30,39 @@ async function checkPendingMember(email: string) {
   }
 }
 
+async function guardLogin(scope: "member-login" | "admin-login", email: string) {
+  const parsedEmail = emailSchema.safeParse(email);
+  if (!parsedEmail.success) {
+    return { error: firstZodError(parsedEmail.error) };
+  }
+
+  const ip = await getClientIp();
+  const rateLimitError = await enforceRateLimit(scope, 5, 15 * 60 * 1000, ip);
+
+  if (rateLimitError) {
+    return { error: rateLimitError.error };
+  }
+
+  return { email: parsedEmail.data.toLowerCase() };
+}
+
 export async function memberLoginAction(
   _prevState: { error?: string } | undefined,
   formData: FormData
 ) {
-  const email = formData.get("email") as string;
+  const guard = await guardLogin("member-login", formData.get("email") as string);
+  if ("error" in guard) {
+    return { error: guard.error };
+  }
 
-  const pendingMessage = await checkPendingMember(email);
+  const pendingMessage = await checkPendingMember(guard.email);
   if (pendingMessage) {
     return { error: pendingMessage };
   }
 
   try {
     await signIn("credentials", {
-      email,
+      email: guard.email,
       password: formData.get("password"),
       loginType: "member",
       redirectTo: MEMBER_BASE_PATH,
@@ -64,9 +86,14 @@ export async function adminLoginAction(
   _prevState: { error?: string } | undefined,
   formData: FormData
 ) {
+  const guard = await guardLogin("admin-login", formData.get("email") as string);
+  if ("error" in guard) {
+    return { error: guard.error };
+  }
+
   try {
     await signIn("credentials", {
-      email: formData.get("email"),
+      email: guard.email,
       password: formData.get("password"),
       loginType: "admin",
       redirectTo: ADMIN_BASE_PATH,

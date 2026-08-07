@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import { ADMIN_BASE_PATH } from "@/lib/constants/admin";
 import { hasAdminRole } from "@/lib/auth/permissions";
+import { createAuditLog } from "@/lib/security/audit-log";
 import { db } from "@/lib/db";
 
 export async function updateChurchProfileAction(
@@ -43,6 +44,13 @@ export async function updateChurchProfileAction(
         vision: vision.trim() || null,
         story: story.trim() || null,
       },
+    });
+
+    await createAuditLog({
+      userId: session.user.id,
+      action: "update",
+      resource: "church_profile",
+      resourceId: "default",
     });
 
     revalidatePath(`${ADMIN_BASE_PATH}/settings`);

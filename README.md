@@ -101,7 +101,8 @@ docs/
 | 7 — Church Operations | ✅ Complete | Events, ministries, campaigns |
 | 8 — Payments | ✅ Complete | Giving page, confirmations, admin payment CMS |
 | 9 — Integrations | ✅ Complete | YouTube, Cloudinary, Resend email |
-| 10–14 | ⏳ Pending | Security, content, testing, deployment |
+| 10 — Security | ✅ Complete | Headers, rate limits, validation, audit log |
+| 11–14 | ⏳ Pending | Content, testing, deployment polish |
 
 ## Content Source of Truth
 

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { hasAdminRole } from "@/lib/auth/permissions";
 import { uploadImage, isCloudinaryConfigured } from "@/lib/integrations/cloudinary";
+import { createAuditLog } from "@/lib/security/audit-log";
 import { db } from "@/lib/db";
 
 export async function POST(request: Request) {
@@ -53,6 +54,14 @@ export async function POST(request: Request) {
         folder,
         uploadedBy: session.user.id,
       },
+    });
+
+    await createAuditLog({
+      userId: session.user.id,
+      action: "upload",
+      resource: "media",
+      resourceId: media.id,
+      details: { filename: file.name },
     });
 
     return NextResponse.json({ media });

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import { hasAdminRole } from "@/lib/auth/permissions";
 import { ADMIN_BASE_PATH } from "@/lib/constants/admin";
+import { createAuditLog } from "@/lib/security/audit-log";
 import { db } from "@/lib/db";
 
 export async function approveMemberAction(userId: string) {
@@ -32,6 +33,14 @@ export async function approveMemberAction(userId: string) {
         data: { status: "approved", reviewedAt: new Date() },
       }),
     ]);
+
+    await createAuditLog({
+      userId: session.user.id,
+      action: "approve",
+      resource: "member",
+      resourceId: userId,
+      details: { email: user.email },
+    });
 
     revalidatePath(`${ADMIN_BASE_PATH}/members`);
     return { success: true };

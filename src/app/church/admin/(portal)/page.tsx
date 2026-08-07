@@ -125,8 +125,8 @@ export default async function AdminDashboardPage() {
             <h2 className="type-subheading mb-2">Current mission</h2>
             <p className="type-body text-muted-foreground">{churchContent.mission}</p>
             <p className="type-body-sm text-muted-foreground mt-4">
-              Phase 4 CMS is live. Next up: blog posts, events, sermons, and user
-              management modules.
+              Security hardening, audit logging, and input validation are active.
+              Seed the database when ready to enable full CMS access.
             </p>
           </div>
         </div>

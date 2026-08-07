@@ -15,6 +15,7 @@ import {
   CreditCard,
   ImageIcon,
   Plug,
+  Shield,
   LogOut,
   ExternalLink,
 } from "lucide-react";
@@ -78,6 +79,11 @@ const navItems = [
     label: "Integrations",
     href: `${ADMIN_BASE_PATH}/integrations`,
     icon: Plug,
+  },
+  {
+    label: "Audit Log",
+    href: `${ADMIN_BASE_PATH}/audit`,
+    icon: Shield,
   },
 ];
 

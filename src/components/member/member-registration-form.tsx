@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { HoneypotField } from "@/components/public/honeypot-field";
 import { MEMBER_LOGIN_PATH } from "@/lib/constants/member";
 
 export function MemberRegistrationForm() {
@@ -35,6 +36,7 @@ export function MemberRegistrationForm() {
       action={formAction}
       className="rounded-2xl border border-border bg-white p-7 md:p-8 space-y-5"
     >
+      <HoneypotField />
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         <div className="space-y-2">
           <Label htmlFor="name">Full name</Label>

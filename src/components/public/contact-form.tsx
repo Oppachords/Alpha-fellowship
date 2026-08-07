@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { HoneypotField } from "@/components/public/honeypot-field";
 
 export function ContactForm() {
   const [state, formAction, pending] = useActionState(submitContactAction, undefined);
@@ -23,6 +24,7 @@ export function ContactForm() {
 
   return (
     <form action={formAction} className="space-y-5">
+      <HoneypotField />
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         <div className="space-y-2">
           <Label htmlFor="name">Name</Label>

@@ -1,35 +1,64 @@
 "use server";
 
 import bcrypt from "bcryptjs";
+import { z } from "zod";
 import { notifyStaff } from "@/lib/email/send-email";
 import { memberRegistrationEmail } from "@/lib/email/templates";
+import { guardPublicForm } from "@/lib/security/public-form-guard";
+import {
+  emailSchema,
+  firstZodError,
+  messageSchema,
+  nameSchema,
+  passwordSchema,
+  phoneSchema,
+} from "@/lib/validations/common";
 import { db } from "@/lib/db";
+
+const registerSchema = z
+  .object({
+    name: nameSchema,
+    email: emailSchema,
+    phone: phoneSchema,
+    password: passwordSchema,
+    confirmPassword: z.string(),
+    message: z.string().trim().max(2000).optional().or(z.literal("")),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match.",
+    path: ["confirmPassword"],
+  });
 
 export async function registerMemberAction(
   _prevState: { success?: boolean; error?: string } | undefined,
   formData: FormData
 ) {
-  const name = (formData.get("name") as string)?.trim();
-  const email = (formData.get("email") as string)?.trim().toLowerCase();
-  const phone = (formData.get("phone") as string)?.trim();
-  const password = formData.get("password") as string;
-  const confirmPassword = formData.get("confirmPassword") as string;
-  const message = (formData.get("message") as string)?.trim();
+  const guard = await guardPublicForm(formData, {
+    scope: "member-register",
+    limit: 3,
+    windowMs: 60 * 60 * 1000,
+  });
+  if (guard?.honeypot) return { success: true };
+  if (guard?.error) return { error: guard.error };
 
-  if (!name || !email || !password) {
-    return { error: "Name, email, and password are required." };
+  const parsed = registerSchema.safeParse({
+    name: formData.get("name"),
+    email: formData.get("email"),
+    phone: formData.get("phone") ?? "",
+    password: formData.get("password"),
+    confirmPassword: formData.get("confirmPassword"),
+    message: formData.get("message") ?? "",
+  });
+
+  if (!parsed.success) {
+    return { error: firstZodError(parsed.error) };
   }
 
-  if (password.length < 8) {
-    return { error: "Password must be at least 8 characters." };
-  }
-
-  if (password !== confirmPassword) {
-    return { error: "Passwords do not match." };
-  }
+  const { name, email, phone, password, message } = parsed.data;
+  const normalizedEmail = email.toLowerCase();
 
   try {
-    const existing = await db.user.findUnique({ where: { email } });
+    const existing = await db.user.findUnique({ where: { email: normalizedEmail } });
     if (existing) {
       return { error: "An account with this email already exists." };
     }
@@ -44,7 +73,7 @@ export async function registerMemberAction(
     await db.user.create({
       data: {
         name,
-        email,
+        email: normalizedEmail,
         phone: phone || null,
         passwordHash,
         isActive: false,
@@ -60,7 +89,7 @@ export async function registerMemberAction(
     await db.membershipApplication.create({
       data: {
         name,
-        email,
+        email: normalizedEmail,
         phone: phone || null,
         message: message || null,
         status: "pending",
@@ -69,7 +98,7 @@ export async function registerMemberAction(
 
     await notifyStaff(
       "New member registration",
-      memberRegistrationEmail({ name, email, phone })
+      memberRegistrationEmail({ name, email: normalizedEmail, phone })
     );
 
     return { success: true };

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { HoneypotField } from "@/components/public/honeypot-field";
 
 const purposes = [
   { value: "tithe", label: "Tithe" },
@@ -42,6 +43,7 @@ export function PaymentConfirmationForm({ methods }: PaymentConfirmationFormProp
       action={formAction}
       className="rounded-2xl border border-border bg-white p-7 md:p-8 space-y-5"
     >
+      <HoneypotField />
       <div>
         <h2 className="type-subheading mb-1">Confirm your gift</h2>
         <p className="type-body-sm text-muted-foreground">

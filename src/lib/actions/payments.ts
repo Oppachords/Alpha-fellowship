@@ -1,33 +1,63 @@
 "use server";
 
+import { z } from "zod";
 import { notifyStaff } from "@/lib/email/send-email";
 import { paymentConfirmationEmail } from "@/lib/email/templates";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import { hasAdminRole } from "@/lib/auth/permissions";
 import { ADMIN_BASE_PATH } from "@/lib/constants/admin";
+import { createAuditLog } from "@/lib/security/audit-log";
+import { guardPublicForm } from "@/lib/security/public-form-guard";
+import {
+  emailSchema,
+  firstZodError,
+  messageSchema,
+  nameSchema,
+  phoneSchema,
+} from "@/lib/validations/common";
 import { db } from "@/lib/db";
+
+const paymentConfirmationSchema = z.object({
+  name: nameSchema,
+  email: emailSchema,
+  phone: phoneSchema,
+  amount: z.string().trim().max(20).optional().or(z.literal("")),
+  paymentMethod: z.string().trim().min(1, "Payment method is required.").max(80),
+  referenceNumber: z
+    .string()
+    .trim()
+    .min(1, "Please include your mobile money or bank reference number.")
+    .max(120),
+  purpose: z.string().trim().max(120).optional().or(z.literal("")),
+  message: z.string().trim().max(2000).optional().or(z.literal("")),
+});
 
 export async function submitPaymentConfirmationAction(
   _prevState: { success?: boolean; error?: string } | undefined,
   formData: FormData
 ) {
-  const name = (formData.get("name") as string)?.trim();
-  const email = (formData.get("email") as string)?.trim();
-  const phone = (formData.get("phone") as string)?.trim();
-  const amount = (formData.get("amount") as string)?.trim();
-  const paymentMethod = (formData.get("paymentMethod") as string)?.trim();
-  const referenceNumber = (formData.get("referenceNumber") as string)?.trim();
-  const purpose = (formData.get("purpose") as string)?.trim();
-  const message = (formData.get("message") as string)?.trim();
+  const guard = await guardPublicForm(formData, { scope: "payment-confirmation", limit: 6 });
+  if (guard?.honeypot) return { success: true };
+  if (guard?.error) return { error: guard.error };
 
-  if (!name || !email || !paymentMethod) {
-    return { error: "Name, email, and payment method are required." };
+  const parsed = paymentConfirmationSchema.safeParse({
+    name: formData.get("name"),
+    email: formData.get("email"),
+    phone: formData.get("phone") ?? "",
+    amount: formData.get("amount") ?? "",
+    paymentMethod: formData.get("paymentMethod"),
+    referenceNumber: formData.get("referenceNumber"),
+    purpose: formData.get("purpose") ?? "",
+    message: formData.get("message") ?? "",
+  });
+
+  if (!parsed.success) {
+    return { error: firstZodError(parsed.error) };
   }
 
-  if (!referenceNumber) {
-    return { error: "Please include your mobile money or bank reference number." };
-  }
+  const { name, email, phone, amount, paymentMethod, referenceNumber, purpose, message } =
+    parsed.data;
 
   try {
     await db.paymentConfirmation.create({
@@ -72,6 +102,13 @@ export async function verifyPaymentConfirmationAction(id: string) {
       data: { status: "verified" },
     });
 
+    await createAuditLog({
+      userId: session.user.id,
+      action: "verify",
+      resource: "payment_confirmation",
+      resourceId: id,
+    });
+
     revalidatePath(`${ADMIN_BASE_PATH}/payments`);
     return { success: true };
   } catch {
@@ -107,6 +144,13 @@ export async function updatePaymentMethodAction(
         accountNumber: accountNumber || null,
         instructions: instructions || null,
       },
+    });
+
+    await createAuditLog({
+      userId: session.user.id,
+      action: "update",
+      resource: "payment_method",
+      resourceId: id,
     });
 
     revalidatePath("/give");
