@@ -6,7 +6,7 @@ A production-ready church CMS, public website, and members portal for **Alpha Fe
 
 - **Next.js 16** (App Router, TypeScript, Server Components)
 - **Tailwind CSS v4** + **shadcn/ui**
-- **PostgreSQL** (Supabase) + **Prisma ORM**
+- **PostgreSQL** (Neon) + **Prisma ORM**
 - **Auth.js** (email/password + Google OAuth)
 - **Cloudinary** (media storage)
 - **YouTube Data API** (live streams & sermons)
@@ -28,16 +28,17 @@ cp .env.example .env
 ```
 
 Required for local development:
-- `DATABASE_URL` — Supabase pooler connection string (port 6543, for runtime)
-- `DIRECT_URL` — Supabase direct connection string (port 5432, for migrations)
+- `DATABASE_URL` — Neon **pooled** connection string (host contains `-pooler`, for runtime)
+- `DIRECT_URL` — Neon **unpooled** connection string (for migrations and seed)
 - `AUTH_SECRET` — Generate with `openssl rand -base64 32`
 
-### 3. Set up Supabase
+Neon also provides `DATABASE_URL_UNPOOLED` — you can use that instead of `DIRECT_URL` if you prefer.
 
-1. Create a project at [supabase.com](https://supabase.com)
-2. Go to **Project Settings → Database**
-3. Copy the **Transaction pooler** URI → `DATABASE_URL`
-4. Copy the **Direct connection** URI → `DIRECT_URL`
+### 3. Set up Neon
+
+1. Create a project at [neon.tech](https://neon.tech)
+2. Copy the **pooled** connection string → `DATABASE_URL`
+3. Copy the **unpooled** connection string → `DIRECT_URL`
 
 ### 4. Set up the database
 
@@ -110,12 +111,19 @@ All Alpha Fellowship organizational information is sourced from [alphafellowship
 
 ## Deployment
 
-Optimized for **Vercel** + **Supabase** + **Cloudinary**:
+Optimized for **Vercel** + **Neon** + **Cloudinary**:
 
 1. Push to GitHub
 2. Connect to Vercel
-3. Set environment variables in Vercel dashboard (`DATABASE_URL`, `DIRECT_URL`, `AUTH_SECRET`, `AUTH_URL`)
+3. Set environment variables in Vercel dashboard:
+   - `DATABASE_URL` — Neon pooled connection
+   - `DIRECT_URL` — Neon unpooled connection (for migrate/seed from CI or local)
+   - `AUTH_SECRET`, `AUTH_URL`
 4. Optional integrations: `YOUTUBE_API_KEY`, `YOUTUBE_CHANNEL_ID`, Cloudinary vars, `RESEND_API_KEY`, `EMAIL_FROM`
-5. Run `npx prisma migrate deploy` against your Supabase database (uses `DIRECT_URL`)
+5. Run `npx prisma migrate deploy` against your Neon database (uses `DIRECT_URL`)
 6. Run `npm run db:seed` to create the admin user and initial content
 7. Staff sign in at `/church/admin/login` (hidden URL). Members use `/members` on the public site to register or sign in at `/member/login`.
+
+## Media storage
+
+Images are stored in **Cloudinary** (not the database). Configure `CLOUDINARY_*` env vars to enable admin media uploads.

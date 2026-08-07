@@ -43,7 +43,7 @@ export default async function MemberEventsPage() {
           {events === null ? (
             <div className="rounded-2xl border border-border bg-white p-8 text-center">
               <p className="type-body-sm text-muted-foreground">
-                Event registration will be available once Supabase is connected.
+                Event registration will be available once the database is connected.
               </p>
             </div>
           ) : events.length === 0 ? (

@@ -32,7 +32,7 @@ export default async function AdminPrayerPage() {
         {requests === null ? (
           <div className="rounded-2xl border border-border bg-white p-8 text-center">
             <p className="type-body text-muted-foreground">
-              Connect Supabase to view prayer requests from members.
+              Connect the database to view prayer requests from members.
             </p>
           </div>
         ) : requests.length === 0 ? (

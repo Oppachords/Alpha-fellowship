@@ -36,7 +36,7 @@ export default async function AdminMediaPage() {
             {media === null ? (
               <div className="rounded-2xl border border-border bg-white p-8 text-center">
                 <p className="type-body-sm text-muted-foreground">
-                  Connect Supabase to manage media records.
+                  Connect the database to manage media records.
                 </p>
               </div>
             ) : media.length === 0 ? (

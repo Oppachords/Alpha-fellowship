@@ -25,7 +25,7 @@ export default async function AdminMinistriesPage() {
             {ministries === null ? (
               <div className="rounded-2xl border border-border bg-white p-8 text-center">
                 <p className="type-body-sm text-muted-foreground">
-                  Connect Supabase to manage ministries.
+                  Connect the database to manage ministries.
                 </p>
               </div>
             ) : ministries.length === 0 ? (

@@ -1,5 +1,5 @@
 // Alpha Fellowship Uganda — Database Schema
-// PostgreSQL on Supabase | Prisma ORM
+// PostgreSQL on Neon | Prisma ORM
 
 generator client {
   provider = "prisma-client-js"

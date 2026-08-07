@@ -29,7 +29,7 @@ export default async function GivePage() {
 
           {!fromDatabase && (
             <p className="type-body-sm text-muted-foreground text-center mb-6">
-              Showing verified details from alphafellowshipug.com. Connect Supabase
+              Showing verified details from alphafellowshipug.com. Connect the database
               to manage payment methods from the admin dashboard.
             </p>
           )}

@@ -52,7 +52,7 @@ export default async function AdminPaymentsPage() {
           <h2 className="type-subheading mb-4">Payment methods</h2>
           {methods === null ? (
             <p className="type-body-sm text-muted-foreground mb-4">
-              Connect Supabase to edit payment methods. Showing fallback details below.
+              Connect the database to edit payment methods. Showing fallback details below.
             </p>
           ) : null}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -67,7 +67,7 @@ export default async function AdminPaymentsPage() {
           {confirmations === null ? (
             <div className="rounded-2xl border border-border bg-white p-8 text-center">
               <p className="type-body-sm text-muted-foreground">
-                Connect Supabase to review submitted payment confirmations.
+                Connect the database to review submitted payment confirmations.
               </p>
             </div>
           ) : confirmations.length === 0 ? (

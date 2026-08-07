@@ -33,7 +33,7 @@ export default async function AdminCampaignsPage() {
             {campaigns === null ? (
               <div className="rounded-2xl border border-border bg-white p-8 text-center">
                 <p className="type-body-sm text-muted-foreground">
-                  Connect Supabase to manage campaigns.
+                  Connect the database to manage campaigns.
                 </p>
               </div>
             ) : campaigns.length === 0 ? (
