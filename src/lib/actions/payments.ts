@@ -1,5 +1,7 @@
 "use server";
 
+import { notifyStaff } from "@/lib/email/send-email";
+import { paymentConfirmationEmail } from "@/lib/email/templates";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import { hasAdminRole } from "@/lib/auth/permissions";
@@ -41,6 +43,11 @@ export async function submitPaymentConfirmationAction(
         status: "pending",
       },
     });
+
+    await notifyStaff(
+      "New payment confirmation",
+      paymentConfirmationEmail({ name, email, paymentMethod, referenceNumber, amount })
+    );
 
     revalidatePath("/give");
     revalidatePath(`${ADMIN_BASE_PATH}/payments`);

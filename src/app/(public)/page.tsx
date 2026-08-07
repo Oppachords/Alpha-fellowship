@@ -3,6 +3,7 @@ import { HeroSection } from "@/components/public/sections/hero-section";
 import { HeartbeatSection } from "@/components/public/sections/heartbeat-section";
 import { PillarsSection } from "@/components/public/sections/pillars-section";
 import { GatheringsSection } from "@/components/public/sections/gatherings-section";
+import { WatchLiveSection } from "@/components/public/sections/watch-live-section";
 import { CommunitySection } from "@/components/public/sections/community-section";
 import { ComeAndSeeSection } from "@/components/public/sections/come-and-see-section";
 import { churchContent } from "@/lib/content/church-content";
@@ -27,6 +28,7 @@ export default function HomePage() {
       <HeartbeatSection />
       <PillarsSection />
       <GatheringsSection />
+      <WatchLiveSection />
       <CommunitySection />
       <ComeAndSeeSection />
     </>

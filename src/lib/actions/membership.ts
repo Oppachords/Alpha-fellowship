@@ -1,6 +1,8 @@
 "use server";
 
 import bcrypt from "bcryptjs";
+import { notifyStaff } from "@/lib/email/send-email";
+import { memberRegistrationEmail } from "@/lib/email/templates";
 import { db } from "@/lib/db";
 
 export async function registerMemberAction(
@@ -64,6 +66,11 @@ export async function registerMemberAction(
         status: "pending",
       },
     });
+
+    await notifyStaff(
+      "New member registration",
+      memberRegistrationEmail({ name, email, phone })
+    );
 
     return { success: true };
   } catch {

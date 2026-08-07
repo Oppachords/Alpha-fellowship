@@ -13,6 +13,8 @@ import {
   Layers,
   Megaphone,
   CreditCard,
+  ImageIcon,
+  Plug,
   LogOut,
   ExternalLink,
 } from "lucide-react";
@@ -66,6 +68,16 @@ const navItems = [
     label: "Payments",
     href: `${ADMIN_BASE_PATH}/payments`,
     icon: CreditCard,
+  },
+  {
+    label: "Media",
+    href: `${ADMIN_BASE_PATH}/media`,
+    icon: ImageIcon,
+  },
+  {
+    label: "Integrations",
+    href: `${ADMIN_BASE_PATH}/integrations`,
+    icon: Plug,
   },
 ];
 

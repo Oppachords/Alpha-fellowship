@@ -1,26 +1,28 @@
 "use client";
 
-import { useState } from "react";
-import { toast } from "sonner";
+import { useActionState } from "react";
+import { submitContactAction } from "@/lib/actions/contact";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
 export function ContactForm() {
-  const [loading, setLoading] = useState(false);
+  const [state, formAction, pending] = useActionState(submitContactAction, undefined);
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setLoading(true);
-    await new Promise((r) => setTimeout(r, 600));
-    setLoading(false);
-    toast.success("Message received! We'll get back to you soon.");
-    (e.target as HTMLFormElement).reset();
+  if (state?.success) {
+    return (
+      <div className="rounded-xl border border-primary/20 bg-primary/5 px-5 py-6 text-center">
+        <p className="font-medium text-foreground mb-1">Message received</p>
+        <p className="type-body-sm text-muted-foreground">
+          Thank you — we&apos;ll get back to you soon.
+        </p>
+      </div>
+    );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form action={formAction} className="space-y-5">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         <div className="space-y-2">
           <Label htmlFor="name">Name</Label>
@@ -51,8 +53,11 @@ export function ContactForm() {
           placeholder="How can we help you?"
         />
       </div>
-      <Button type="submit" disabled={loading} className="w-full sm:w-auto">
-        {loading ? "Sending…" : "Send message"}
+
+      {state?.error && <p className="text-sm text-destructive">{state.error}</p>}
+
+      <Button type="submit" disabled={pending} className="w-full sm:w-auto">
+        {pending ? "Sending…" : "Send message"}
       </Button>
     </form>
   );

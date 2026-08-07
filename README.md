@@ -100,7 +100,7 @@ docs/
 | 6 — Pastoral Care | ✅ Complete | Prayer & counselling request systems |
 | 7 — Church Operations | ✅ Complete | Events, ministries, campaigns |
 | 8 — Payments | ✅ Complete | Giving page, confirmations, admin payment CMS |
-| 9 — Integrations | ⏳ Pending | YouTube, Cloudinary, Email |
+| 9 — Integrations | ✅ Complete | YouTube, Cloudinary, Resend email |
 | 10–14 | ⏳ Pending | Security, content, testing, deployment |
 
 ## Content Source of Truth
@@ -114,6 +114,7 @@ Optimized for **Vercel** + **Supabase** + **Cloudinary**:
 1. Push to GitHub
 2. Connect to Vercel
 3. Set environment variables in Vercel dashboard (`DATABASE_URL`, `DIRECT_URL`, `AUTH_SECRET`, `AUTH_URL`)
-4. Run `npx prisma migrate deploy` against your Supabase database (uses `DIRECT_URL`)
-5. Run `npm run db:seed` to create the admin user and initial content
-6. Staff sign in at `/church/admin/login` (hidden URL). Members use `/members` on the public site to register or sign in at `/member/login`.
+4. Optional integrations: `YOUTUBE_API_KEY`, `YOUTUBE_CHANNEL_ID`, Cloudinary vars, `RESEND_API_KEY`, `EMAIL_FROM`
+5. Run `npx prisma migrate deploy` against your Supabase database (uses `DIRECT_URL`)
+6. Run `npm run db:seed` to create the admin user and initial content
+7. Staff sign in at `/church/admin/login` (hidden URL). Members use `/members` on the public site to register or sign in at `/member/login`.

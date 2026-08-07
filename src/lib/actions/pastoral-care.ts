@@ -1,5 +1,7 @@
 "use server";
 
+import { notifyStaff } from "@/lib/email/send-email";
+import { prayerRequestEmail, counsellingRequestEmail } from "@/lib/email/templates";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 
@@ -60,6 +62,16 @@ export async function submitPrayerRequestAction(
       },
     });
 
+    await notifyStaff(
+      "New prayer request",
+      prayerRequestEmail({
+        name: isAnonymous ? "Anonymous" : name,
+        email,
+        category,
+        request,
+      })
+    );
+
     return { success: true };
   } catch {
     return {
@@ -113,6 +125,11 @@ export async function submitCounsellingRequestAction(
         hasConsent,
       },
     });
+
+    await notifyStaff(
+      "New counselling request",
+      counsellingRequestEmail({ name, email, phone, message: message ?? reason })
+    );
 
     return { success: true };
   } catch {
