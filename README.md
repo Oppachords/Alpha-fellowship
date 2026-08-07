@@ -1,36 +1,103 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Alpha Fellowship Uganda — Digital Platform
+
+A production-ready church CMS, public website, and members portal for **Alpha Fellowship Uganda**.
+
+## Tech Stack
+
+- **Next.js 16** (App Router, TypeScript, Server Components)
+- **Tailwind CSS v4** + **shadcn/ui**
+- **PostgreSQL** (Neon) + **Prisma ORM**
+- **Auth.js** (email/password + Google OAuth)
+- **Cloudinary** (media storage)
+- **YouTube Data API** (live streams & sermons)
 
 ## Getting Started
 
-First, run the development server:
+### 1. Install dependencies
+
+```bash
+npm install
+```
+
+### 2. Configure environment
+
+Copy `.env.example` to `.env` and fill in your values:
+
+```bash
+cp .env.example .env
+```
+
+Required for local development:
+- `DATABASE_URL` — Neon PostgreSQL connection string
+- `AUTH_SECRET` — Generate with `openssl rand -base64 32`
+
+### 3. Set up the database
+
+```bash
+npx prisma migrate dev --name init
+npx prisma db seed
+```
+
+### 4. Run the development server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+src/
+├── app/
+│   ├── (public)/          # Public website pages
+│   ├── (auth)/            # Login, register, password reset
+│   ├── (member)/          # Members portal
+│   ├── (admin)/           # Admin dashboard & CMS
+│   └── api/               # Route handlers
+├── components/
+│   ├── public/            # Public site components
+│   ├── admin/             # Admin dashboard components
+│   ├── member/            # Members portal components
+│   └── ui/                # shadcn/ui design system
+├── lib/
+│   ├── content/           # Verified church content (fallback)
+│   ├── auth/              # Auth.js configuration
+│   ├── services/          # Business logic services
+│   └── validations/       # Zod schemas
+prisma/
+├── schema.prisma          # Database schema
+└── seed.ts                # Development seed data
+docs/
+└── CONTENT_INVENTORY.md   # Verified Alpha Fellowship content
+```
 
-## Learn More
+## Development Phases
 
-To learn more about Next.js, take a look at the following resources:
+| Phase | Status | Description |
+|-------|--------|-------------|
+| 0 — Discovery | ✅ Complete | Content audit from alphafellowshipug.com |
+| 1 — Design System | ✅ Complete | Brand tokens, typography, components |
+| 2 — Foundation | ✅ Complete | Next.js, Prisma schema, env config |
+| 3 — Public Website | 🔄 In Progress | Homepage built; other pages pending |
+| 4 — CMS / Admin | ⏳ Pending | Dashboard, content management |
+| 5 — Members Portal | ⏳ Pending | Registration, profiles, dashboard |
+| 6 — Pastoral Care | ⏳ Pending | Prayer & counselling systems |
+| 7 — Church Operations | ⏳ Pending | Events, ministries, campaigns |
+| 8 — Payments | ⏳ Pending | MTN, Airtel, Bank configuration |
+| 9 — Integrations | ⏳ Pending | YouTube, Cloudinary, Email |
+| 10–14 | ⏳ Pending | Security, content, testing, deployment |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Content Source of Truth
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+All Alpha Fellowship organizational information is sourced from [alphafellowshipug.com](https://alphafellowshipug.com). See `docs/CONTENT_INVENTORY.md` for the full audit. Missing information uses CMS placeholders — never invented facts.
 
-## Deploy on Vercel
+## Deployment
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Optimized for **Vercel** + **Neon** + **Cloudinary**:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Push to GitHub
+2. Connect to Vercel
+3. Set environment variables in Vercel dashboard
+4. Run `npx prisma migrate deploy` for production database
