@@ -80,7 +80,7 @@ docs/
 | 0 — Discovery | ✅ Complete | Content audit from alphafellowshipug.com |
 | 1 — Design System | ✅ Complete | Brand tokens, typography, components |
 | 2 — Foundation | ✅ Complete | Next.js, Prisma schema, env config |
-| 3 — Public Website | 🔄 In Progress | Homepage built; other pages pending |
+| 3 — Public Website | ✅ Complete | Homepage + About, Gatherings, Contact, Give |
 | 4 — CMS / Admin | ⏳ Pending | Dashboard, content management |
 | 5 — Members Portal | ⏳ Pending | Registration, profiles, dashboard |
 | 6 — Pastoral Care | ⏳ Pending | Prayer & counselling systems |

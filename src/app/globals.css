@@ -1,26 +1,201 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-nunito);
+  --font-serif: var(--font-lora);
+  --font-heading: var(--font-lora);
+
+  --color-sky: var(--sky);
+  --color-sky-light: var(--sky-light);
+  --color-sky-deep: var(--sky-deep);
+  --color-sky-muted: var(--sky-muted);
+  --color-cream: var(--cream);
+
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  /* Sky & Light — matched from Lovable preview computed styles */
+  --sky: oklch(50% 0.09 230);
+  --sky-light: oklch(98% 0.01 240);
+  --sky-deep: oklch(28% 0.04 235);
+  --sky-muted: oklch(50% 0.03 235);
+  --cream: oklch(97% 0.012 240);
+
+  --background: oklch(98% 0.01 240);
+  --foreground: oklch(28% 0.04 235);
+  --card: #ffffff;
+  --card-foreground: oklch(28% 0.04 235);
+  --popover: #ffffff;
+  --popover-foreground: oklch(28% 0.04 235);
+  --primary: oklch(50% 0.09 230);
+  --primary-foreground: #ffffff;
+  --secondary: oklch(97% 0.012 240);
+  --secondary-foreground: oklch(28% 0.04 235);
+  --muted: oklch(97% 0.012 240);
+  --muted-foreground: oklch(50% 0.03 235);
+  --accent: oklch(97% 0.012 240);
+  --accent-foreground: oklch(28% 0.04 235);
+  --destructive: #dc2626;
+  --border: oklch(92% 0.02 240);
+  --input: oklch(92% 0.02 240);
+  --ring: oklch(50% 0.09 230);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "kern" 1, "liga" 1;
+  }
+  html {
+    @apply scroll-smooth;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  /* ── Typography scale (from Lovable computed styles) ── */
+
+  /* Logo: Lora 18px/28px w600 tracking -0.45px */
+  .type-logo {
+    @apply font-serif text-lg font-semibold tracking-[-0.03em] text-white;
+  }
+
+  /* Nav links: Nunito 14px/20px w600 */
+  .type-nav {
+    @apply font-sans text-sm font-semibold text-white/85;
+  }
+
+  /* Hero eyebrow: Nunito 14px/20px w700 tracking 4.2px */
+  .type-eyebrow-hero {
+    @apply font-sans text-sm font-bold uppercase tracking-[0.3em] text-white/80;
+  }
+
+  /* Section eyebrow: Nunito 14px/20px w700 tracking 3.5px, primary color */
+  .type-eyebrow {
+    @apply font-sans text-sm font-bold uppercase tracking-[0.25em] text-primary;
+  }
+
+  /* Pillar label: Nunito 12px/16px w700 tracking 2.4px */
+  .type-label {
+    @apply font-sans text-xs font-bold uppercase tracking-[0.2em] text-primary;
+  }
+
+  /* H1: Lora 60px/64.8px w600 */
+  .type-display {
+    @apply font-serif text-[2.75rem] sm:text-5xl md:text-[3.75rem] font-semibold leading-[1.08] text-white;
+  }
+
+  /* H2: Lora 36px/49.5px w600 */
+  .type-heading {
+    @apply font-serif text-3xl sm:text-4xl font-semibold leading-[1.375] text-foreground;
+  }
+
+  /* H2 large (Come and see): Lora 48px/60px w600 */
+  .type-heading-lg {
+    @apply font-serif text-4xl sm:text-5xl font-semibold leading-tight text-white;
+  }
+
+  /* H3: Lora 20px/28px w600 */
+  .type-subheading {
+    @apply font-serif text-xl font-semibold leading-7 text-foreground;
+  }
+
+  /* Body large: Nunito 18px/29.25px w400 */
+  .type-body-lg {
+    @apply font-sans text-lg font-normal leading-[1.625];
+  }
+
+  /* Body: Nunito 16px/24px w400 */
+  .type-body {
+    @apply font-sans text-base font-normal leading-6;
+  }
+
+  /* Body small: Nunito 14px/22.75px w400 */
+  .type-body-sm {
+    @apply font-sans text-sm font-normal leading-[1.625];
+  }
+
+  /* Time/meta: mono 14px/20px w600 */
+  .type-meta {
+    @apply font-mono text-sm font-semibold text-sky-deep/80;
+  }
+
+  /* ── Layout ── */
+  .section-padding {
+    @apply px-6 py-24;
+  }
+  .container-narrow {
+    @apply mx-auto max-w-2xl text-center;
+  }
+  .container-wide {
+    @apply mx-auto max-w-4xl;
+  }
+  .container-content {
+    @apply mx-auto max-w-3xl;
+  }
+
+  /* Hero overlay */
+  .hero-overlay {
+    background: linear-gradient(
+      to bottom,
+      rgba(26, 51, 71, 0.35) 0%,
+      rgba(26, 51, 71, 0.5) 50%,
+      rgba(26, 51, 71, 0.6) 100%
+    );
+  }
+
+  /* Section glow (heartbeat) */
+  .section-glow {
+    background: linear-gradient(
+      to bottom,
+      oklch(50% 0.09 230 / 0.06) 0%,
+      transparent 100%
+    );
+  }
+
+  /* ── Buttons ── */
+  .pill-btn-white {
+    @apply inline-flex items-center justify-center rounded-full px-7 py-3 font-sans text-sm font-bold bg-white text-primary hover:bg-white/90 transition-colors;
+  }
+  .pill-btn-ghost {
+    @apply inline-flex items-center justify-center rounded-full px-7 py-3 font-sans text-sm font-bold border border-white/40 bg-white/10 text-white backdrop-blur-sm hover:bg-white/20 transition-colors;
+  }
+  .pill-btn-primary {
+    @apply inline-flex items-center justify-center rounded-full px-7 py-3 font-sans text-sm font-bold bg-white text-primary hover:bg-white/90 transition-colors;
+  }
+  .pill-btn-outline {
+    @apply inline-flex items-center justify-center rounded-full px-7 py-3 font-sans text-sm font-bold border border-primary/30 text-primary hover:bg-primary/5 transition-colors;
+  }
 }
