@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { AnimatedSection } from "@/components/public/animated-section";
+import { LeadershipProfileCard } from "@/components/public/leadership-profile-card";
 import { PageHero } from "@/components/public/page-hero";
 import { EliteFoundationSection } from "@/components/public/sections/elite-foundation-section";
 import { churchContent } from "@/lib/content/church-content";
@@ -72,58 +74,34 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      <section className="section-padding bg-background">
+      <section className="section-padding bg-background section-fade-in">
         <div className="container-wide">
-          <p className="type-eyebrow mb-4 text-center">Leadership</p>
-          <h2 className="type-heading text-center mb-12">Those who serve</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {leaders.map((leader) => (
-              <div
-                key={leader.id}
-                className="rounded-2xl border border-border bg-white overflow-hidden text-center"
-              >
-                {leader.photoUrl ? (
-                  <div className="relative aspect-[4/5] w-full bg-muted">
-                    <Image
-                      src={leader.photoUrl}
-                      alt={leader.name}
-                      fill
-                      className="object-cover object-top"
-                      sizes="(max-width: 768px) 100vw, 33vw"
-                    />
-                  </div>
-                ) : (
-                  <div className="flex aspect-[4/5] w-full items-center justify-center bg-cream text-sm text-muted-foreground">
-                    Photo coming soon
-                  </div>
-                )}
-                <div className="p-7">
-                  <h3 className="type-subheading mb-1">{leader.name}</h3>
-                  <p className="type-label mb-4">{leader.position}</p>
-                  {leader.bio && (
-                    <p className="type-body-sm text-muted-foreground">{leader.bio}</p>
-                  )}
-                </div>
-              </div>
+          <AnimatedSection>
+            <p className="type-eyebrow mb-4 text-center">Leadership</p>
+            <h2 className="type-heading mb-12 text-center">Those who serve</h2>
+          </AnimatedSection>
+          <div className="mx-auto flex max-w-5xl flex-col gap-8">
+            {leaders.map((leader, index) => (
+              <LeadershipProfileCard key={leader.id} leader={leader} index={index} />
             ))}
           </div>
         </div>
       </section>
 
-      <section className="section-padding bg-cream">
+      <section className="section-padding bg-cream section-fade-in">
         <div className="container-wide">
-          <p className="type-eyebrow mb-4 text-center">Service team</p>
-          <h2 className="type-heading text-center mb-4">Behind the scenes</h2>
-          <p className="type-body-sm text-muted-foreground text-center max-w-2xl mx-auto mb-12">
-            Dedicated team members who help coordinate gatherings, media, and church
-            administration at Alpha Fellowship.
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {serviceTeam.map((member) => (
-              <div
-                key={member.id}
-                className="rounded-2xl border border-border bg-white p-7 text-center"
-              >
+          <AnimatedSection>
+            <p className="type-eyebrow mb-4 text-center">Service team</p>
+            <h2 className="type-heading mb-4 text-center">Behind the scenes</h2>
+            <p className="type-body-sm mx-auto mb-12 max-w-2xl text-center text-muted-foreground">
+              Dedicated team members who help coordinate gatherings, media, and church
+              administration at Alpha Fellowship.
+            </p>
+          </AnimatedSection>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            {serviceTeam.map((member, index) => (
+              <AnimatedSection key={member.id} delay={index * 0.08}>
+                <div className="h-full rounded-2xl border border-border bg-white p-7 text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
                 {member.photoUrl ? (
                   <div className="relative mx-auto mb-5 h-24 w-24 overflow-hidden rounded-full bg-muted">
                     <Image
@@ -146,7 +124,8 @@ export default async function AboutPage() {
                 {member.bio && (
                   <p className="type-body-sm text-muted-foreground">{member.bio}</p>
                 )}
-              </div>
+                </div>
+              </AnimatedSection>
             ))}
           </div>
         </div>

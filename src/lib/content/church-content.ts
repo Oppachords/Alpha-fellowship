@@ -102,9 +102,14 @@ export const churchContent = {
   ],
   eliteFoundation: {
     name: "Elite Foundation",
+    eyebrow: "Our Community Outreach",
     subtitle: "Humanitarian and community outreach under Alpha Fellowship",
+    intro:
+      "Elite Foundation is a humanitarian and community outreach under Alpha Fellowship, committed to restoring hope and transforming vulnerable communities through compassion, spiritual & physical empowerment, education, healthcare, food relief and sustainable development initiatives.",
+    tagline: "Transforming Lives Through Love and Service",
     founded: "4th April 2023",
-    location: "Grace Gardens Namungoona, Kampala",
+    story:
+      "Founded on 4th April 2023, Elite Foundation exists to empower vulnerable individuals and families by providing practical support, promoting education, improving health awareness, and creating opportunities for sustainable livelihoods. Through partnerships and community engagement, the foundation seeks to make a lasting impact across Uganda.",
     mission:
       "To empower and uplift vulnerable communities through sustainable outreach programs, education, health services, and youth empowerment initiatives.",
     vision:
@@ -116,8 +121,41 @@ export const churchContent = {
       "Health & Sanitation Awareness",
       "Livelihood & Skills Development",
     ],
-    websiteUrl: "https://www.facebook.com/p/Elite-Foundation-Uganda-61576636170416",
-    contactUrl: "/contact",
+    programs: [
+      {
+        title: "Feed a Family",
+        description:
+          "Monthly food distribution supporting vulnerable rural families.",
+      },
+      {
+        title: "Girls in School",
+        description:
+          "Providing school materials and educational support to girls in underserved communities.",
+      },
+      {
+        title: "Youth Skills",
+        description:
+          "Practical entrepreneurship, vocational and life skills training for young people.",
+      },
+      {
+        title: "Medical Outreach",
+        description:
+          "Health screening, hygiene education and community wellness campaigns.",
+      },
+    ],
+    partnerCta: {
+      title: "Partner With Elite Foundation",
+      description:
+        "Join us in bringing hope, restoring dignity, and creating lasting change for vulnerable communities across Uganda.",
+    },
+    websiteUrl: "https://elitefoundationug.org",
+    contacts: {
+      email: "Elitefoundation183@gmail.com",
+      phones: ["+256786443879", "+256757696884"],
+      whatsapp: "+256757696884",
+      instagram: "@Elitefoundation001",
+      instagramUrl: "https://www.instagram.com/Elitefoundation001",
+    },
   },
   payments: {
     mtn: {
