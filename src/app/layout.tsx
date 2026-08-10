@@ -26,6 +26,24 @@ export const metadata: Metadata = {
   },
   description:
     "A non-denominational fellowship working among young people in Kampala, Uganda. Setting Ablaze all Nations for Christ.",
+  openGraph: {
+    type: "website",
+    locale: "en_UG",
+    siteName: "Alpha Fellowship Uganda",
+    title: "Alpha Fellowship Uganda",
+    description:
+      "A non-denominational fellowship working among young people in Kampala, Uganda. Setting Ablaze all Nations for Christ.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Alpha Fellowship Uganda",
+    description:
+      "A non-denominational fellowship working among young people in Kampala, Uganda.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({

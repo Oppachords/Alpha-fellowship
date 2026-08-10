@@ -1,11 +1,50 @@
-import { Smartphone, Building2 } from "lucide-react";
+import Image from "next/image";
 import type { PaymentMethodDisplay } from "@/lib/payments/fallback-methods";
 
-function MethodIcon({ type }: { type: string }) {
-  if (type === "bank") {
-    return <Building2 className="h-5 w-5 text-primary" />;
+const paymentIcons: Record<string, { src: string; alt: string }> = {
+  mtn: {
+    src: "/images/payments/mtn-mobile-money.svg",
+    alt: "MTN Mobile Money",
+  },
+  airtel: {
+    src: "/images/payments/airtel-money.svg",
+    alt: "Airtel Money",
+  },
+  bank: {
+    src: "/images/payments/equity-bank.svg",
+    alt: "Equity Bank",
+  },
+};
+
+function resolveIcon(method: PaymentMethodDisplay) {
+  if (paymentIcons[method.type]) {
+    return paymentIcons[method.type];
   }
-  return <Smartphone className="h-5 w-5 text-primary" />;
+
+  const name = method.displayName.toLowerCase();
+  if (name.includes("mtn")) return paymentIcons.mtn;
+  if (name.includes("airtel")) return paymentIcons.airtel;
+  if (name.includes("equity") || name.includes("bank")) return paymentIcons.bank;
+
+  return null;
+}
+
+function MethodIcon({ method }: { method: PaymentMethodDisplay }) {
+  const icon = resolveIcon(method);
+
+  if (!icon) {
+    return (
+      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-sm font-bold text-primary">
+        {method.displayName.charAt(0)}
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl ring-1 ring-border/60">
+      <Image src={icon.src} alt={icon.alt} fill className="object-cover" sizes="48px" />
+    </div>
+  );
 }
 
 export function PaymentMethodsList({ methods }: { methods: PaymentMethodDisplay[] }) {
@@ -17,9 +56,7 @@ export function PaymentMethodsList({ methods }: { methods: PaymentMethodDisplay[
           className="flex flex-col rounded-2xl border border-border bg-white p-6 shadow-sm transition-shadow hover:shadow-md h-full"
         >
           <div className="flex items-center gap-3 mb-5">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-              <MethodIcon type={method.type} />
-            </div>
+            <MethodIcon method={method} />
             <h3 className="type-subheading text-lg">{method.displayName}</h3>
           </div>
 

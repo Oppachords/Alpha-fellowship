@@ -20,6 +20,7 @@ import {
   Shield,
   LogOut,
   ExternalLink,
+  Newspaper,
 } from "lucide-react";
 import { signOutAction } from "@/lib/actions/auth";
 import { ADMIN_BASE_PATH } from "@/lib/constants/admin";
@@ -66,6 +67,11 @@ const navItems = [
     label: "Programs",
     href: `${ADMIN_BASE_PATH}/programs`,
     icon: BookOpen,
+  },
+  {
+    label: "Blog",
+    href: `${ADMIN_BASE_PATH}/blog`,
+    icon: Newspaper,
   },
   {
     label: "Ministries",

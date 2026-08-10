@@ -12,6 +12,7 @@ const publicRoutes = [
   "/campaigns",
   "/watch-live",
   "/sermons",
+  "/blog",
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {

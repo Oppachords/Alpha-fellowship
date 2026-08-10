@@ -1,13 +1,14 @@
 import Link from "next/link";
 import { churchContent } from "@/lib/content/church-content";
+import { footerNavLinks } from "@/lib/navigation/public-nav";
 
 export function SiteFooter() {
   const currentYear = new Date().getFullYear();
 
   return (
     <footer className="bg-background border-t border-border py-12">
-      <div className="container-wide max-w-4xl px-6">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+      <div className="container-wide max-w-5xl px-6">
+        <div className="flex flex-col md:flex-row items-start justify-between gap-8">
           <div className="text-center md:text-left">
             <p className="font-serif text-base font-semibold text-foreground">
               Alpha Fellowship
@@ -15,28 +16,16 @@ export function SiteFooter() {
             <p className="type-body-sm text-muted-foreground mt-1">{churchContent.mission}</p>
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-6 type-body-sm text-muted-foreground">
-            <Link href="/about" className="hover:text-foreground transition-colors">
-              About
-            </Link>
-            <Link href="/services" className="hover:text-foreground transition-colors">
-              Gatherings
-            </Link>
-            <Link href="/events" className="hover:text-foreground transition-colors">
-              Events
-            </Link>
-            <Link href="/ministries" className="hover:text-foreground transition-colors">
-              Ministries
-            </Link>
-            <Link href="/contact" className="hover:text-foreground transition-colors">
-              Contact
-            </Link>
-            <Link href="/give" className="hover:text-foreground transition-colors">
-              Give
-            </Link>
-            <Link href="/members" className="hover:text-foreground transition-colors">
-              Members
-            </Link>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-8 gap-y-3 type-body-sm text-muted-foreground">
+            {footerNavLinks.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="hover:text-foreground transition-colors"
+              >
+                {item.label}
+              </Link>
+            ))}
           </div>
         </div>
 
