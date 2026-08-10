@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHero } from "@/components/public/page-hero";
 import { churchContent } from "@/lib/content/church-content";
+import { formatTime } from "@/lib/content/queries";
+import { getPublicPrograms, getPublicServices } from "@/lib/content/queries";
 
 export const metadata: Metadata = {
   title: "Gatherings",
@@ -9,14 +11,12 @@ export const metadata: Metadata = {
     "Weekly fellowship at Grace Gardens Namungoona — Tuesday 5–8 PM and Sunday 9 AM–12 PM.",
 };
 
-function formatTime(time: string) {
-  const [hours, minutes] = time.split(":").map(Number);
-  const period = hours >= 12 ? "PM" : "AM";
-  const h = hours % 12 || 12;
-  return `${h}:${String(minutes).padStart(2, "0")} ${period}`;
-}
+export default async function ServicesPage() {
+  const [{ services }, { programs }] = await Promise.all([
+    getPublicServices(),
+    getPublicPrograms(),
+  ]);
 
-export default function ServicesPage() {
   return (
     <>
       <PageHero
@@ -31,20 +31,28 @@ export default function ServicesPage() {
           <h2 className="type-heading text-center mb-12">When we meet</h2>
 
           <div className="space-y-4">
-            {churchContent.services.map((service) => (
+            {services.map((service) => (
               <div
-                key={service.day}
+                key={service.id}
                 className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-7 rounded-2xl border border-border bg-white"
               >
                 <div>
-                  <h3 className="type-subheading mb-1">{service.day}</h3>
+                  <h3 className="type-subheading mb-1">{service.dayLabel}</h3>
                   <p className="type-body-sm text-muted-foreground">{service.venue}</p>
-                  <p className="type-body-sm text-muted-foreground mt-1">
-                    Duration: {service.duration}
-                  </p>
+                  {service.duration && (
+                    <p className="type-body-sm text-muted-foreground mt-1">
+                      Duration: {service.duration}
+                    </p>
+                  )}
+                  {service.description && (
+                    <p className="type-body-sm text-muted-foreground mt-2">
+                      {service.description}
+                    </p>
+                  )}
                 </div>
                 <p className="type-meta shrink-0">
-                  {formatTime(service.startTime)} – {formatTime(service.endTime)}
+                  {formatTime(service.startTime)}
+                  {service.endTime ? ` – ${formatTime(service.endTime)}` : ""}
                 </p>
               </div>
             ))}
@@ -58,15 +66,21 @@ export default function ServicesPage() {
           <h2 className="type-heading text-center mb-12">Programs &amp; ministries</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {churchContent.programs.map((program) => (
+            {programs.map((program) => (
               <div
-                key={program.title}
+                key={program.id}
                 className="rounded-2xl border border-border bg-white p-7"
               >
                 <h3 className="type-subheading mb-3">{program.title}</h3>
                 <p className="type-body-sm text-muted-foreground">{program.description}</p>
               </div>
             ))}
+          </div>
+
+          <div className="text-center mt-10">
+            <Link href="/ministries" className="pill-btn-outline inline-flex">
+              View ministries
+            </Link>
           </div>
         </div>
       </section>
@@ -78,11 +92,11 @@ export default function ServicesPage() {
             Come as you are. All are welcome at Grace Gardens Namungoona, Kampala.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
+            <Link href="/give" className="pill-btn-outline inline-flex">
+              Donate
+            </Link>
             <Link href="/contact" className="pill-btn-outline inline-flex">
               Get in touch
-            </Link>
-            <Link href="/about" className="pill-btn-outline inline-flex">
-              Learn about us
             </Link>
           </div>
         </div>

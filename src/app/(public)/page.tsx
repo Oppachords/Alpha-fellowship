@@ -7,6 +7,7 @@ import { WatchLiveSection } from "@/components/public/sections/watch-live-sectio
 import { CommunitySection } from "@/components/public/sections/community-section";
 import { ComeAndSeeSection } from "@/components/public/sections/come-and-see-section";
 import { churchContent } from "@/lib/content/church-content";
+import { getPublicServices } from "@/lib/content/queries";
 
 export const metadata: Metadata = {
   title: "Alpha Fellowship Uganda | Worship, Pray & Grow Together",
@@ -21,13 +22,18 @@ export const metadata: Metadata = {
   },
 };
 
-export default function HomePage() {
+export default async function HomePage() {
+  const { services } = await getPublicServices();
+
   return (
     <>
       <HeroSection />
       <HeartbeatSection />
       <PillarsSection />
-      <GatheringsSection />
+      <GatheringsSection
+        services={services}
+        serviceDescription={churchContent.serviceDescription}
+      />
       <WatchLiveSection />
       <CommunitySection />
       <ComeAndSeeSection />

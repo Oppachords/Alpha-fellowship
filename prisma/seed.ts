@@ -30,17 +30,37 @@ async function main() {
     },
   });
 
-  // Services
+  // Services (weekly gatherings)
   const services = [
-    { name: "Tuesday Fellowship", dayOfWeek: 2, startTime: "17:00", endTime: "20:00", venue: "Grace Gardens Namungoona" },
-    { name: "Sunday Service", dayOfWeek: 0, startTime: "09:00", endTime: "12:00", venue: "Grace Gardens Namungoona" },
+    {
+      id: "service-tuesday",
+      name: "Tuesday Fellowship",
+      dayOfWeek: 2,
+      startTime: "17:00",
+      endTime: "20:00",
+      venue: "Grace Gardens Namungoona",
+      description:
+        "Mid-week fellowship with live worship, sharing of the word of God, prayer, and fellowship.",
+      sortOrder: 0,
+    },
+    {
+      id: "service-sunday",
+      name: "Sunday Service",
+      dayOfWeek: 0,
+      startTime: "09:00",
+      endTime: "12:00",
+      venue: "Grace Gardens Namungoona",
+      description:
+        "Sunday gathering with live worship, the word of God, and a time of prayer and fellowship. All are welcome.",
+      sortOrder: 1,
+    },
   ];
 
-  for (const [i, service] of services.entries()) {
+  for (const service of services) {
     await prisma.service.upsert({
-      where: { id: `service-${i}` },
+      where: { id: service.id },
       update: service,
-      create: { id: `service-${i}`, ...service, sortOrder: i },
+      create: { ...service, isActive: true },
     });
   }
 
@@ -117,7 +137,9 @@ async function main() {
   // Leadership (verified from official site)
   await prisma.leader.upsert({
     where: { id: "leader-john-mukisa" },
-    update: {},
+    update: {
+      isPublished: true,
+    },
     create: {
       id: "leader-john-mukisa",
       name: "BR Mukisa John Jackson",
@@ -185,13 +207,47 @@ async function main() {
 
   console.log(`👤 Admin user seeded: ${adminEmail}`);
 
-  // Programs (verified)
+  // Programs (verified from alphafellowshipug.com)
   const programs = [
-    { title: "Weekly Fellowship", slug: "weekly-fellowship", description: "Join us for a journey of faith, prayer, counselling and guidance.", isPublished: true, sortOrder: 0 },
-    { title: "Counselling", slug: "counselling", description: "Pastoral counselling and spiritual guidance.", isPublished: true, sortOrder: 1 },
-    { title: "Charity and Donations", slug: "charity-donations", description: "Food drives, clothing donations, and financial support for those in need.", isPublished: true, sortOrder: 2 },
-    { title: "Book Printing", slug: "book-printing", description: "Printing message books for churches unable to do so.", isPublished: true, sortOrder: 3 },
-    { title: "Tapes & SD Cards", slug: "tapes-sd-cards", description: "Supporting believers with recorded messages.", isPublished: true, sortOrder: 4 },
+    {
+      title: "Weekly Fellowship",
+      slug: "weekly-fellowship",
+      description:
+        "Join us for a journey of faith, prayer, counselling and guidance.",
+      isPublished: true,
+      sortOrder: 0,
+    },
+    {
+      title: "Counselling",
+      slug: "counselling",
+      description: "Pastoral counselling and spiritual guidance for those in need.",
+      isPublished: true,
+      sortOrder: 1,
+    },
+    {
+      title: "Charity and Donations",
+      slug: "charity-donations",
+      description:
+        "Acts of charity embodying love, compassion, and selflessness — food drives, clothing donations, and financial support for those in need.",
+      isPublished: true,
+      sortOrder: 2,
+    },
+    {
+      title: "Book Printing",
+      slug: "book-printing",
+      description:
+        "Printing message books and supplying them to churches that aren't able to do so.",
+      isPublished: true,
+      sortOrder: 3,
+    },
+    {
+      title: "Tapes & SD Cards",
+      slug: "tapes-sd-cards",
+      description:
+        "Supporting believers with recorded messages through SD cards and tapes.",
+      isPublished: true,
+      sortOrder: 4,
+    },
   ];
 
   for (const program of programs) {
@@ -199,6 +255,67 @@ async function main() {
       where: { slug: program.slug },
       update: program,
       create: program,
+    });
+  }
+
+  // Ministries (admin-manageable; seeded from verified site content)
+  const ministries = [
+    {
+      slug: "weekly-fellowship",
+      name: "Weekly Fellowship",
+      description:
+        "Join us for a journey of faith, prayer, counselling and guidance.",
+      location: "Grace Gardens Namungoona",
+      isPublished: true,
+      sortOrder: 0,
+    },
+    {
+      slug: "counselling",
+      name: "Counselling",
+      description: "Pastoral counselling and spiritual guidance for those in need.",
+      isPublished: true,
+      sortOrder: 1,
+    },
+    {
+      slug: "charity-donations",
+      name: "Charity and Donations",
+      description:
+        "Food drives, clothing donations, and financial support for those in need.",
+      isPublished: true,
+      sortOrder: 2,
+    },
+    {
+      slug: "book-printing",
+      name: "Book Printing",
+      description:
+        "Printing message books for churches unable to do so.",
+      isPublished: true,
+      sortOrder: 3,
+    },
+    {
+      slug: "tapes-sd-cards",
+      name: "Tapes & SD Cards",
+      description: "Supporting believers with recorded messages.",
+      isPublished: true,
+      sortOrder: 4,
+    },
+    {
+      slug: "elite-foundation",
+      name: "Elite Foundation",
+      description:
+        "Humanitarian and community outreach under Alpha Fellowship. Mission: To empower and uplift vulnerable communities through sustainable outreach programs, education, health services, and youth empowerment initiatives. Vision: A society where every individual, especially the underserved, has access to opportunities, dignity, and a voice.",
+      schedule: "Founded 4th April 2023",
+      location: "Grace Gardens Namungoona",
+      isPublished: true,
+      sortOrder: 5,
+    },
+  ];
+
+  for (const ministry of ministries) {
+    await prisma.ministry.upsert({
+      where: { slug: ministry.slug },
+      update: ministry,
+      create: ministry,
     });
   }
 

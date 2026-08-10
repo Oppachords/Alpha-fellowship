@@ -4,6 +4,7 @@ import Link from "next/link";
 import { PageHero } from "@/components/public/page-hero";
 import { db } from "@/lib/db";
 import { churchContent } from "@/lib/content/church-content";
+import { getPublicServices, formatTime } from "@/lib/content/queries";
 import { Calendar, MapPin } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -24,7 +25,7 @@ async function getEvents() {
 }
 
 export default async function EventsPage() {
-  const events = await getEvents();
+  const [events, { services }] = await Promise.all([getEvents(), getPublicServices()]);
 
   return (
     <>
@@ -86,12 +87,23 @@ export default async function EventsPage() {
             </div>
           )}
 
-          <div className="rounded-2xl border border-border bg-cream p-7 text-center">
+          <div className="rounded-2xl border border-border bg-cream p-7">
             <p className="type-label mb-2">Weekly rhythm</p>
-            <p className="type-body-sm text-muted-foreground">
+            <p className="type-body-sm text-muted-foreground mb-4">
               {churchContent.serviceDescription}
             </p>
-            <Link href="/services" className="pill-btn-outline inline-flex mt-4">
+            <div className="space-y-2 mb-4">
+              {services.map((service) => (
+                <p key={service.id} className="type-body-sm text-muted-foreground">
+                  <span className="font-medium text-foreground">{service.dayLabel}</span>
+                  {" · "}
+                  {formatTime(service.startTime)}
+                  {service.endTime ? ` – ${formatTime(service.endTime)}` : ""}
+                  {service.venue ? ` · ${service.venue}` : ""}
+                </p>
+              ))}
+            </div>
+            <Link href="/services" className="pill-btn-outline inline-flex">
               Plan your visit
             </Link>
           </div>

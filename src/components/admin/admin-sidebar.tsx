@@ -10,6 +10,8 @@ import {
   Heart,
   HandHeart,
   Calendar,
+  Clock,
+  BookOpen,
   Layers,
   Megaphone,
   CreditCard,
@@ -54,6 +56,16 @@ const navItems = [
     label: "Events",
     href: `${ADMIN_BASE_PATH}/events`,
     icon: Calendar,
+  },
+  {
+    label: "Gatherings",
+    href: `${ADMIN_BASE_PATH}/services`,
+    icon: Clock,
+  },
+  {
+    label: "Programs",
+    href: `${ADMIN_BASE_PATH}/programs`,
+    icon: BookOpen,
   },
   {
     label: "Ministries",

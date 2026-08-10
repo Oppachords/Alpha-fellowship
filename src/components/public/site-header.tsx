@@ -41,9 +41,14 @@ export function SiteHeader() {
                 {item.label}
               </Link>
             ))}
-            <Link href="/services" className="pill-btn-white py-2.5 px-5">
-              Plan a visit
-            </Link>
+            <div className="flex items-center gap-3">
+              <Link href="/give" className="pill-btn-ghost py-2.5 px-5">
+                Donate
+              </Link>
+              <Link href="/services" className="pill-btn-white py-2.5 px-5">
+                Plan a visit
+              </Link>
+            </div>
           </nav>
 
           <Sheet open={open} onOpenChange={setOpen}>
@@ -83,13 +88,22 @@ export function SiteHeader() {
                     </Link>
                   ))}
                 </nav>
-                <Link
-                  href="/services"
-                  onClick={() => setOpen(false)}
-                  className="pill-btn-outline mt-8 text-center"
-                >
-                  Plan a visit
-                </Link>
+                <div className="mt-8 space-y-3">
+                  <Link
+                    href="/give"
+                    onClick={() => setOpen(false)}
+                    className="pill-btn-outline block text-center"
+                  >
+                    Donate
+                  </Link>
+                  <Link
+                    href="/services"
+                    onClick={() => setOpen(false)}
+                    className="pill-btn-outline block text-center"
+                  >
+                    Plan a visit
+                  </Link>
+                </div>
               </div>
             </SheetContent>
           </Sheet>

@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default async function GivePage() {
-  const { methods, fromDatabase } = await getActivePaymentMethods();
+  const { methods } = await getActivePaymentMethods();
 
   return (
     <>
@@ -26,13 +26,6 @@ export default async function GivePage() {
         <div className="container-wide max-w-3xl">
           <p className="type-eyebrow mb-4 text-center">Ways to give</p>
           <h2 className="type-heading text-center mb-12">Payment methods</h2>
-
-          {!fromDatabase && (
-            <p className="type-body-sm text-muted-foreground text-center mb-6">
-              Showing verified details from alphafellowshipug.com. Connect the database
-              to manage payment methods from the admin dashboard.
-            </p>
-          )}
 
           <PaymentMethodsList methods={methods} />
         </div>
