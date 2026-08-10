@@ -4,6 +4,8 @@ import { HeartbeatSection } from "@/components/public/sections/heartbeat-section
 import { PillarsSection } from "@/components/public/sections/pillars-section";
 import { GatheringsSection } from "@/components/public/sections/gatherings-section";
 import { WatchLiveSection } from "@/components/public/sections/watch-live-section";
+import { ServiceTimesSection } from "@/components/public/sections/service-times-section";
+import { PreviousStreamsSection } from "@/components/public/sections/previous-streams-section";
 import { CommunitySection } from "@/components/public/sections/community-section";
 import { ComeAndSeeSection } from "@/components/public/sections/come-and-see-section";
 import { churchContent } from "@/lib/content/church-content";
@@ -30,11 +32,10 @@ export default async function HomePage() {
       <HeroSection />
       <HeartbeatSection />
       <PillarsSection />
-      <GatheringsSection
-        services={services}
-        serviceDescription={churchContent.serviceDescription}
-      />
+      <GatheringsSection serviceDescription={churchContent.serviceDescription} />
       <WatchLiveSection />
+      <ServiceTimesSection services={services} />
+      <PreviousStreamsSection />
       <CommunitySection />
       <ComeAndSeeSection />
     </>

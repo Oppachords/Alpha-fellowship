@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { buttonVariants } from "@/components/ui/button";
@@ -22,9 +22,39 @@ const navLinks = [
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const [overLightSection, setOverLightSection] = useState(false);
+
+  useEffect(() => {
+    const lightSections = document.querySelectorAll('[data-nav-theme="light"]');
+    if (lightSections.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const atTop = entries.some(
+          (entry) => entry.isIntersecting && entry.intersectionRatio > 0
+        );
+        setOverLightSection(atTop);
+      },
+      {
+        root: null,
+        rootMargin: "-72px 0px -70% 0px",
+        threshold: [0, 0.1, 0.25],
+      }
+    );
+
+    lightSections.forEach((section) => observer.observe(section));
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <header className="fixed top-0 z-50 w-full">
+    <header
+      className={cn(
+        "fixed top-0 z-50 w-full transition-all duration-300",
+        overLightSection
+          ? "bg-sky-deep/95 backdrop-blur-md shadow-sm"
+          : "bg-transparent"
+      )}
+    >
       <div className="container-wide max-w-6xl px-6">
         <div className="flex h-20 items-center justify-between">
           <Link href="/" className="type-logo">

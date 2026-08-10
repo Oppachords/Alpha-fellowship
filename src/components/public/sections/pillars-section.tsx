@@ -22,7 +22,7 @@ const pillars = [
 
 export function PillarsSection() {
   return (
-    <section className="section-padding bg-cream">
+    <section data-nav-theme="light" className="section-padding bg-cream section-fade-in">
       <div className="container-wide">
         <p className="type-eyebrow mb-4 text-center">What we do</p>
         <h2 className="type-heading text-center mb-14">

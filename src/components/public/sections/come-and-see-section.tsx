@@ -4,7 +4,7 @@ import { churchContent } from "@/lib/content/church-content";
 
 export function ComeAndSeeSection() {
   return (
-    <section className="section-padding bg-primary text-white">
+    <section data-nav-theme="dark" className="section-padding bg-primary text-white section-fade-in">
       <div className="container-narrow max-w-2xl">
         <p className="type-eyebrow-hero mb-6 text-white/60">Come and see</p>
         <h2 className="type-heading-lg mb-6 text-balance">

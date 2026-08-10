@@ -64,6 +64,10 @@ async function main() {
     });
   }
 
+  await prisma.service.deleteMany({
+    where: { id: { in: ["service-0", "service-1"] } },
+  });
+
   // Social Links
   const socialLinks = [
     { platform: "youtube", url: "https://youtube.com/@alphabfellowship", sortOrder: 0 },

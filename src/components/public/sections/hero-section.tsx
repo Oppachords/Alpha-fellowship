@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export function HeroSection() {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section data-nav-theme="dark" className="relative min-h-screen flex items-center justify-center overflow-hidden">
       <Image
         src="/images/hero-sanctuary.png"
         alt="Alpha Fellowship worship sanctuary with light streaming through windows"

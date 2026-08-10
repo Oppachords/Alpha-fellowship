@@ -1,5 +1,6 @@
 import { AdminHeader } from "@/components/admin/admin-header";
 import { CreateProgramForm } from "@/components/admin/create-program-form";
+import { ProgramImageUpload } from "@/components/admin/program-image-upload";
 import { db } from "@/lib/db";
 
 async function getPrograms() {
@@ -40,20 +41,45 @@ export default async function AdminProgramsPage() {
                   key={program.id}
                   className="rounded-2xl border border-border bg-white p-5"
                 >
-                  <div className="flex justify-between gap-4 mb-2">
-                    <h2 className="font-medium text-foreground">{program.title}</h2>
-                    <span className="text-xs text-muted-foreground capitalize shrink-0">
-                      {program.isPublished ? "Published" : "Draft"}
-                    </span>
+                  <div className="flex flex-col sm:flex-row gap-5">
+                    {program.imageUrl ? (
+                      <div className="relative h-24 w-full sm:h-20 sm:w-28 shrink-0 overflow-hidden rounded-xl bg-muted">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={program.imageUrl}
+                          alt={program.title}
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div className="flex h-24 w-full sm:h-20 sm:w-28 shrink-0 items-center justify-center rounded-xl border border-dashed border-border bg-muted/40 text-xs text-muted-foreground">
+                        No photo
+                      </div>
+                    )}
+                    <div className="flex-1">
+                      <div className="flex justify-between gap-4 mb-2">
+                        <h2 className="font-medium text-foreground">{program.title}</h2>
+                        <span className="text-xs text-muted-foreground capitalize shrink-0">
+                          {program.isPublished ? "Published" : "Draft"}
+                        </span>
+                      </div>
+                      {program.description && (
+                        <p className="text-sm text-muted-foreground">{program.description}</p>
+                      )}
+                      {(program.schedule || program.location) && (
+                        <p className="text-xs text-muted-foreground mt-2">
+                          {[program.schedule, program.location].filter(Boolean).join(" · ")}
+                        </p>
+                      )}
+                      <div className="mt-4">
+                        <ProgramImageUpload
+                          programId={program.id}
+                          programTitle={program.title}
+                          currentUrl={program.imageUrl}
+                        />
+                      </div>
+                    </div>
                   </div>
-                  {program.description && (
-                    <p className="text-sm text-muted-foreground">{program.description}</p>
-                  )}
-                  {(program.schedule || program.location) && (
-                    <p className="text-xs text-muted-foreground mt-2">
-                      {[program.schedule, program.location].filter(Boolean).join(" · ")}
-                    </p>
-                  )}
                 </article>
               ))
             )}

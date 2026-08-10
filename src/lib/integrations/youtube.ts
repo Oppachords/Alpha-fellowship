@@ -106,6 +106,32 @@ export async function fetchRecentVideos(limit = 12): Promise<YouTubeVideo[]> {
   return (data?.items ?? []).map(mapVideo);
 }
 
+export async function fetchFeaturedPlayback(): Promise<{
+  video: YouTubeVideo;
+  mode: "live" | "recent";
+} | null> {
+  const live = await fetchLiveStream();
+  if (live) {
+    return { video: live, mode: "live" };
+  }
+
+  const [recent] = await fetchRecentVideos(1);
+  if (recent) {
+    return { video: recent, mode: "recent" };
+  }
+
+  return null;
+}
+
+export async function fetchPreviousStreams(limit = 8): Promise<YouTubeVideo[]> {
+  const featured = await fetchFeaturedPlayback();
+  const videos = await fetchRecentVideos(limit + 1);
+
+  if (!featured) return videos.slice(0, limit);
+
+  return videos.filter((video) => video.id !== featured.video.id).slice(0, limit);
+}
+
 export function getYouTubeChannelUrl() {
   return churchContent.social.youtube;
 }

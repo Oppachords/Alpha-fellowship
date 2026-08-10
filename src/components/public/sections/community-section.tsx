@@ -11,7 +11,7 @@ const highlights = [
 
 export function CommunitySection() {
   return (
-    <section id="community" className="section-padding bg-cream">
+    <section id="community" data-nav-theme="light" className="section-padding bg-cream section-fade-in">
       <div className="container-wide">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center">
           <div className="relative aspect-[4/5] rounded-2xl overflow-hidden">

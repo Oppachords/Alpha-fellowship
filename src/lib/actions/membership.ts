@@ -56,6 +56,7 @@ export async function registerMemberAction(
 
   const { name, email, phone, password, message } = parsed.data;
   const normalizedEmail = email.toLowerCase();
+  const photoUrl = (formData.get("photoUrl") as string)?.trim() || null;
 
   try {
     const existing = await db.user.findUnique({ where: { email: normalizedEmail } });
@@ -76,6 +77,7 @@ export async function registerMemberAction(
         email: normalizedEmail,
         phone: phone || null,
         passwordHash,
+        image: photoUrl || null,
         isActive: false,
         roles: {
           create: { roleId: memberRole.id },

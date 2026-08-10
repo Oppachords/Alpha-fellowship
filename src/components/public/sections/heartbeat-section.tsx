@@ -2,7 +2,7 @@ import { churchContent } from "@/lib/content/church-content";
 
 export function HeartbeatSection() {
   return (
-    <section className="section-padding bg-background section-glow">
+    <section data-nav-theme="light" className="section-padding bg-background section-glow section-fade-in">
       <div className="container-content">
         <p className="type-eyebrow mb-6 text-center">Our heartbeat</p>
         <h2 className="type-heading text-center mb-8 text-balance">

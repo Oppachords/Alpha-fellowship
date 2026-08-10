@@ -22,9 +22,20 @@ export async function getPublicServices(): Promise<{
     });
 
     if (rows.length > 0) {
+      const uniqueByDay = new Map<number, (typeof rows)[number]>();
+      for (const row of rows) {
+        if (!uniqueByDay.has(row.dayOfWeek)) {
+          uniqueByDay.set(row.dayOfWeek, row);
+        }
+      }
+
+      const deduped = Array.from(uniqueByDay.values()).sort(
+        (a, b) => a.sortOrder - b.sortOrder || a.dayOfWeek - b.dayOfWeek
+      );
+
       return {
         fromDatabase: true,
-        services: rows.map((row) => ({
+        services: deduped.map((row) => ({
           id: row.id,
           name: row.name,
           dayLabel: serviceDayLabel(row.dayOfWeek, row.name),

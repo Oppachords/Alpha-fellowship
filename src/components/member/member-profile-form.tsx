@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { updateMemberProfileAction } from "@/lib/actions/member-profile";
+import { ImageUploadField } from "@/components/shared/image-upload-field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,6 +16,7 @@ type MemberProfileFormProps = {
     address: string;
     emergencyContact: string;
     emergencyPhone: string;
+    photoUrl: string;
   };
 };
 
@@ -26,6 +28,14 @@ export function MemberProfileForm({ profile }: MemberProfileFormProps) {
 
   return (
     <form action={formAction} className="space-y-5">
+      <ImageUploadField
+        name="photoUrl"
+        label="Profile photo (optional)"
+        endpoint="/api/member/profile-photo"
+        defaultUrl={profile.photoUrl || null}
+        folder="alpha-fellowship/members"
+      />
+
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         <div className="space-y-2">
           <Label htmlFor="name">Full name</Label>
@@ -87,9 +97,7 @@ export function MemberProfileForm({ profile }: MemberProfileFormProps) {
 
       {state?.error && <p className="text-sm text-destructive">{state.error}</p>}
       {state?.success && (
-        <p className="text-sm text-primary">
-          Profile saved. Database sync will activate in a later phase.
-        </p>
+        <p className="text-sm text-primary">Profile saved successfully.</p>
       )}
 
       <Button type="submit" disabled={pending}>

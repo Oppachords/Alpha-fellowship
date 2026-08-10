@@ -6,6 +6,8 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { IMAGE_UPLOAD } from "@/lib/media/constants";
+import { validateImageUpload } from "@/lib/media/validate-image";
 
 export function MediaUploadForm() {
   const router = useRouter();
@@ -17,6 +19,16 @@ export function MediaUploadForm() {
     setPending(true);
 
     const formData = new FormData(e.currentTarget);
+    const file = formData.get("file");
+
+    if (file instanceof File) {
+      const validation = await validateImageUpload(file);
+      if (!validation.ok) {
+        toast.error(validation.error);
+        setPending(false);
+        return;
+      }
+    }
 
     try {
       const response = await fetch("/api/admin/media/upload", {
@@ -42,13 +54,23 @@ export function MediaUploadForm() {
   }
 
   return (
-    <form ref={formRef} onSubmit={handleSubmit} className="rounded-2xl border border-border bg-white p-5 space-y-4">
+    <form
+      ref={formRef}
+      onSubmit={handleSubmit}
+      className="rounded-2xl border border-border bg-white p-5 space-y-4"
+    >
       <h3 className="font-medium text-foreground">Upload image</h3>
+      <p className="text-xs text-muted-foreground">{IMAGE_UPLOAD.helperText}</p>
 
       <div className="space-y-2">
         <Label htmlFor="file">Image file</Label>
-        <Input id="file" name="file" type="file" accept="image/*" required />
-        <p className="text-xs text-muted-foreground">JPEG, PNG, or WebP — max 5 MB.</p>
+        <Input
+          id="file"
+          name="file"
+          type="file"
+          accept={IMAGE_UPLOAD.allowedMimeTypes.join(",")}
+          required
+        />
       </div>
 
       <div className="space-y-2">
