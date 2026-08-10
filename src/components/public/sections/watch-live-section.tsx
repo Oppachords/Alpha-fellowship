@@ -1,5 +1,6 @@
-import { Play, ExternalLink, Radio } from "lucide-react";
+import { Play, Radio } from "lucide-react";
 import { AnimatedSection } from "@/components/public/animated-section";
+import { YouTubeIcon } from "@/components/public/brand-icons";
 import { YouTubeEmbed } from "@/components/public/youtube-embed";
 import { ButtonLink } from "@/components/ui/button-link";
 import { churchContent } from "@/lib/content/church-content";
@@ -40,12 +41,11 @@ export async function WatchLiveSection() {
                 </ButtonLink>
                 <ButtonLink
                   href={churchContent.social.youtube}
-                  variant="outline"
-                  className="rounded-full border-white/30 text-white hover:bg-white/10 hover:text-white"
+                  className="inline-flex items-center justify-center rounded-full px-7 py-3 font-sans text-sm font-bold bg-[#FF0000] text-white hover:bg-[#CC0000] transition-colors"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <ExternalLink className="mr-2 h-4 w-4" />
+                  <YouTubeIcon className="mr-2 h-4 w-4" />
                   YouTube Channel
                 </ButtonLink>
               </div>

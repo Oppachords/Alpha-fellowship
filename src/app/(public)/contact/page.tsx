@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
-import { MapPin, Phone, Mail, MessageCircle } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { PageHero } from "@/components/public/page-hero";
 import { ContactForm } from "@/components/public/contact-form";
+import {
+  GmailIcon,
+  PhoneCallIcon,
+  WhatsAppIcon,
+} from "@/components/public/brand-icons";
 import { churchContent } from "@/lib/content/church-content";
 
 export const metadata: Metadata = {
@@ -39,7 +44,9 @@ export default function ContactPage() {
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
-                  <Phone className="h-5 w-5 shrink-0 mt-0.5 text-primary" />
+                  <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#34C759]/10">
+                    <PhoneCallIcon />
+                  </span>
                   <div>
                     <p className="type-subheading text-base">Phone</p>
                     <a
@@ -60,7 +67,9 @@ export default function ContactPage() {
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
-                  <Mail className="h-5 w-5 shrink-0 mt-0.5 text-primary" />
+                  <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#EA4335]/10">
+                    <GmailIcon />
+                  </span>
                   <div>
                     <p className="type-subheading text-base">Email</p>
                     <a
@@ -72,7 +81,9 @@ export default function ContactPage() {
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
-                  <MessageCircle className="h-5 w-5 shrink-0 mt-0.5 text-primary" />
+                  <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#25D366]/10">
+                    <WhatsAppIcon />
+                  </span>
                   <div>
                     <p className="type-subheading text-base">WhatsApp</p>
                     <a
