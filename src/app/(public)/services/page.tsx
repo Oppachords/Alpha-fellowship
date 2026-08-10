@@ -3,7 +3,7 @@ import Link from "next/link";
 import { PageHero } from "@/components/public/page-hero";
 import { churchContent } from "@/lib/content/church-content";
 import { formatTime } from "@/lib/content/queries";
-import { getPublicPrograms, getPublicServices } from "@/lib/content/queries";
+import { getPublicMinistries, getPublicServices } from "@/lib/content/queries";
 
 export const metadata: Metadata = {
   title: "Gatherings",
@@ -12,10 +12,14 @@ export const metadata: Metadata = {
 };
 
 export default async function ServicesPage() {
-  const [{ services }, { programs }] = await Promise.all([
+  const [{ services }, { ministries }] = await Promise.all([
     getPublicServices(),
-    getPublicPrograms(),
+    getPublicMinistries(),
   ]);
+
+  const coreMinistries = ministries.filter(
+    (ministry) => ministry.slug !== "elite-foundation"
+  );
 
   return (
     <>
@@ -63,24 +67,24 @@ export default async function ServicesPage() {
 
       <section className="section-padding bg-cream">
         <div className="container-wide">
-          <p className="type-eyebrow mb-4 text-center">What we do</p>
-          <h2 className="type-heading text-center mb-12">Programs &amp; ministries</h2>
+          <p className="type-eyebrow mb-4 text-center">How we serve</p>
+          <h2 className="type-heading text-center mb-12">Ministries</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {programs.map((program) => (
+            {coreMinistries.map((ministry) => (
               <div
-                key={program.id}
+                key={ministry.id}
                 className="rounded-2xl border border-border bg-white p-7"
               >
-                <h3 className="type-subheading mb-3">{program.title}</h3>
-                <p className="type-body-sm text-muted-foreground">{program.description}</p>
+                <h3 className="type-subheading mb-3">{ministry.name}</h3>
+                <p className="type-body-sm text-muted-foreground">{ministry.description}</p>
               </div>
             ))}
           </div>
 
           <div className="text-center mt-10">
             <Link href="/ministries" className="pill-btn-outline inline-flex">
-              View ministries
+              View all ministries
             </Link>
           </div>
         </div>

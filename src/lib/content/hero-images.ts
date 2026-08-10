@@ -27,7 +27,6 @@ export type HeroPageKey =
   | "sermons"
   | "events"
   | "ministries"
-  | "programs"
   | "contact"
   | "give"
   | "blog"
@@ -46,7 +45,6 @@ const pageHeroImages: Record<HeroPageKey, string[]> = {
   sermons: [heroImages.worshipBand, heroImages.worshipGathering],
   events: [heroImages.fellowshipOutdoors, heroImages.worshipCommunity],
   ministries: [heroImages.smallGroupPrayer, heroImages.fellowshipOutdoors],
-  programs: [heroImages.smallGroupPrayer, heroImages.worshipBand],
   contact: [heroImages.fellowshipOutdoors],
   give: [heroImages.sunsetWorship, heroImages.sunsetSilhouettes],
   blog: [heroImages.worshipGathering],

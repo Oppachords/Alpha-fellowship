@@ -7,7 +7,6 @@ import {
   updateCampaignAction,
 } from "@/lib/actions/church-crud";
 import {
-  updateProgramAction,
   updateServiceAction,
 } from "@/lib/actions/church-content-admin";
 import { Button } from "@/components/ui/button";
@@ -79,39 +78,6 @@ export function EditMinistryForm({
       {state?.error && <p className="text-sm text-destructive">{state.error}</p>}
       <Button type="submit" disabled={pending} size="sm">
         Save ministry
-      </Button>
-    </form>
-  );
-}
-
-export function EditProgramForm({
-  program,
-}: {
-  program: {
-    id: string;
-    title: string;
-    description: string | null;
-    schedule: string | null;
-    location: string | null;
-    isPublished: boolean;
-  };
-}) {
-  const [state, formAction, pending] = useActionState(updateProgramAction, undefined);
-
-  return (
-    <form action={formAction} className="space-y-3 rounded-xl border border-border bg-muted/30 p-4">
-      <input type="hidden" name="id" value={program.id} />
-      <Input name="title" defaultValue={program.title} required />
-      <Textarea name="description" rows={2} defaultValue={program.description ?? ""} />
-      <Input name="schedule" defaultValue={program.schedule ?? ""} />
-      <Input name="location" defaultValue={program.location ?? ""} />
-      <label className="flex items-center gap-2 text-sm">
-        <input type="checkbox" name="isPublished" defaultChecked={program.isPublished} />
-        Published
-      </label>
-      {state?.error && <p className="text-sm text-destructive">{state.error}</p>}
-      <Button type="submit" disabled={pending} size="sm">
-        Save program
       </Button>
     </form>
   );

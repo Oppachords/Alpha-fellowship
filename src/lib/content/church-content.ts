@@ -75,27 +75,27 @@ export const churchContent = {
       description: "Supports church administration, records, and day-to-day coordination.",
     },
   ],
-  programs: [
+  ministries: [
     {
-      title: "Weekly Fellowship",
+      name: "Weekly Fellowship",
       description: "Join us for a journey of faith, prayer, counselling and guidance.",
     },
     {
-      title: "Counselling",
+      name: "Counselling",
       description: "Pastoral counselling and spiritual guidance for those in need.",
     },
     {
-      title: "Charity and Donations",
+      name: "Charity and Donations",
       description:
         "Acts of charity embodying love, compassion, and selflessness — food drives, clothing donations, and financial support.",
     },
     {
-      title: "Book Printing",
+      name: "Book Printing",
       description:
         "Printing message books and supplying them to churches that aren't able to do so.",
     },
     {
-      title: "Tapes & SD Cards",
+      name: "Tapes & SD Cards",
       description:
         "Supporting believers with recorded messages through SD cards and tapes.",
     },
@@ -179,7 +179,6 @@ export const navigation = {
     { label: "Home", href: "/" },
     { label: "About", href: "/about" },
     { label: "Ministries", href: "/ministries" },
-    { label: "Programs", href: "/programs" },
     { label: "Events", href: "/events" },
     { label: "Sermons", href: "/sermons" },
     { label: "Blog", href: "/blog" },

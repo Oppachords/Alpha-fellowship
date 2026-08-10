@@ -35,6 +35,20 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/programs",
+        destination: "/ministries",
+        permanent: true,
+      },
+      {
+        source: "/church/admin/programs",
+        destination: "/church/admin/ministries",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {

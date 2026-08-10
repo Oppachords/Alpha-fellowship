@@ -340,7 +340,6 @@ model Ministry {
 
   members     MinistryMember[]
   events      Event[]
-  programs    Program[]
   applications MinistryApplication[]
 
   @@index([slug])
@@ -372,28 +371,6 @@ model MinistryApplication {
   updatedAt  DateTime @updatedAt
 
   @@index([status])
-}
-
-model Program {
-  id              String   @id @default(cuid())
-  title           String
-  slug            String   @unique
-  description     String?  @db.Text
-  imageUrl        String?
-  schedule        String?
-  location        String?
-  ministryId      String?
-  ministry        Ministry? @relation(fields: [ministryId], references: [id])
-  leaderName      String?
-  registrationEnabled Boolean @default(false)
-  isFeatured      Boolean  @default(false)
-  isPublished     Boolean  @default(false)
-  sortOrder       Int      @default(0)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-
-  @@index([slug])
-  @@index([isPublished, isFeatured])
 }
 
 // ─── Services & Events ────────────────────────────────────────────

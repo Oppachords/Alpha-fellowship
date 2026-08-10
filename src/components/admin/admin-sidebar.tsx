@@ -11,7 +11,6 @@ import {
   HandHeart,
   Calendar,
   Clock,
-  BookOpen,
   Layers,
   Megaphone,
   CreditCard,
@@ -69,11 +68,6 @@ const navItems = [
     label: "Gatherings",
     href: `${ADMIN_BASE_PATH}/services`,
     icon: Clock,
-  },
-  {
-    label: "Programs",
-    href: `${ADMIN_BASE_PATH}/programs`,
-    icon: BookOpen,
   },
   {
     label: "Blog",

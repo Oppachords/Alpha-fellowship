@@ -4,7 +4,6 @@ const publicRoutes = [
   "",
   "/about",
   "/services",
-  "/programs",
   "/contact",
   "/give",
   "/members",

@@ -41,16 +41,6 @@ export type PublicService = {
   duration: string | null;
 };
 
-export type PublicProgram = {
-  id: string;
-  title: string;
-  slug: string;
-  description: string | null;
-  schedule?: string | null;
-  location?: string | null;
-  imageUrl?: string | null;
-};
-
 export type PublicGallery = {
   id: string;
   title: string;

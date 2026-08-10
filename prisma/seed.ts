@@ -255,58 +255,7 @@ async function main() {
 
   console.log(`👤 Admin user seeded: ${adminEmail}`);
 
-  // Programs (verified from alphafellowshipug.com)
-  const programs = [
-    {
-      title: "Weekly Fellowship",
-      slug: "weekly-fellowship",
-      description:
-        "Join us for a journey of faith, prayer, counselling and guidance.",
-      isPublished: true,
-      sortOrder: 0,
-    },
-    {
-      title: "Counselling",
-      slug: "counselling",
-      description: "Pastoral counselling and spiritual guidance for those in need.",
-      isPublished: true,
-      sortOrder: 1,
-    },
-    {
-      title: "Charity and Donations",
-      slug: "charity-donations",
-      description:
-        "Acts of charity embodying love, compassion, and selflessness — food drives, clothing donations, and financial support for those in need.",
-      isPublished: true,
-      sortOrder: 2,
-    },
-    {
-      title: "Book Printing",
-      slug: "book-printing",
-      description:
-        "Printing message books and supplying them to churches that aren't able to do so.",
-      isPublished: true,
-      sortOrder: 3,
-    },
-    {
-      title: "Tapes & SD Cards",
-      slug: "tapes-sd-cards",
-      description:
-        "Supporting believers with recorded messages through SD cards and tapes.",
-      isPublished: true,
-      sortOrder: 4,
-    },
-  ];
-
-  for (const program of programs) {
-    await prisma.program.upsert({
-      where: { slug: program.slug },
-      update: program,
-      create: program,
-    });
-  }
-
-  // Ministries (admin-manageable; seeded from verified site content)
+  // Ministries (verified from alphafellowshipug.com)
   const ministries = [
     {
       slug: "weekly-fellowship",
@@ -328,7 +277,7 @@ async function main() {
       slug: "charity-donations",
       name: "Charity and Donations",
       description:
-        "Food drives, clothing donations, and financial support for those in need.",
+        "Acts of charity embodying love, compassion, and selflessness — food drives, clothing donations, and financial support for those in need.",
       isPublished: true,
       sortOrder: 2,
     },
@@ -336,14 +285,15 @@ async function main() {
       slug: "book-printing",
       name: "Book Printing",
       description:
-        "Printing message books for churches unable to do so.",
+        "Printing message books and supplying them to churches that aren't able to do so.",
       isPublished: true,
       sortOrder: 3,
     },
     {
       slug: "tapes-sd-cards",
       name: "Tapes & SD Cards",
-      description: "Supporting believers with recorded messages.",
+      description:
+        "Supporting believers with recorded messages through SD cards and tapes.",
       isPublished: true,
       sortOrder: 4,
     },
@@ -367,13 +317,14 @@ async function main() {
     });
   }
 
+  await prisma.navigationItem.deleteMany({ where: { id: "nav-programs" } });
+
   // Navigation
   const navItems = [
     { id: "nav-home", label: "Home", href: "/", sortOrder: 0 },
     { id: "nav-about", label: "About", href: "/about", sortOrder: 1 },
     { id: "nav-ministries", label: "Ministries", href: "/ministries", sortOrder: 2 },
-    { id: "nav-programs", label: "Programs", href: "/programs", sortOrder: 3 },
-    { id: "nav-events", label: "Events", href: "/events", sortOrder: 4 },
+    { id: "nav-events", label: "Events", href: "/events", sortOrder: 3 },
     { id: "nav-sermons", label: "Sermons", href: "/sermons", sortOrder: 5 },
     { id: "nav-blog", label: "Blog", href: "/blog", sortOrder: 6 },
     { id: "nav-involved", label: "Get Involved", href: "/get-involved", sortOrder: 7 },

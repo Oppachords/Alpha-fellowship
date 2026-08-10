@@ -15,7 +15,6 @@ export const headerNavLinks: PublicNavLink[] = [
 
 /** Shown in More menu on lg, inline from xl up */
 export const headerOverflowNavLinks: PublicNavLink[] = [
-  { label: "Programs", href: "/programs" },
   { label: "Gallery", href: "/gallery" },
   { label: "Get Involved", href: "/get-involved" },
   { label: "Watch Live", href: "/watch-live" },
@@ -33,7 +32,6 @@ export const primaryNavLinks: PublicNavLink[] = [
 export const footerNavLinks: PublicNavLink[] = [
   { label: "About", href: "/about" },
   { label: "Ministries", href: "/ministries" },
-  { label: "Programs", href: "/programs" },
   { label: "Gatherings", href: "/services" },
   { label: "Gallery", href: "/gallery" },
   { label: "Sermons", href: "/sermons" },

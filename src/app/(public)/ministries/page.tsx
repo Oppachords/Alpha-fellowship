@@ -7,7 +7,7 @@ import { getEliteFoundationMinistry, getPublicMinistries } from "@/lib/content/q
 
 export const metadata: Metadata = {
   title: "Ministries",
-  description: "Ministries and programs at Alpha Fellowship Uganda.",
+  description: "Ministries and areas of service at Alpha Fellowship Uganda.",
 };
 
 export default async function MinistriesPage() {
@@ -26,7 +26,7 @@ export default async function MinistriesPage() {
         imageKey="ministries"
         eyebrow="How we serve"
         title="Ministries"
-        description="Areas of fellowship, outreach, and service at Alpha Fellowship Uganda."
+        description="Fellowship, outreach, counselling, and service at Alpha Fellowship Uganda."
       />
 
       <section className="section-padding bg-background">

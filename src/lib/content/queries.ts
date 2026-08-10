@@ -11,7 +11,6 @@ import {
   type PublicLeader,
   type PublicServiceTeamMember,
   type PublicMinistry,
-  type PublicProgram,
   type PublicService,
   type PublicTestimonial,
 } from "@/lib/content/format-service";
@@ -83,45 +82,6 @@ export async function getPublicServices(): Promise<{
   };
 }
 
-export async function getPublicPrograms(): Promise<{
-  programs: PublicProgram[];
-  fromDatabase: boolean;
-}> {
-  try {
-    const rows = await db.program.findMany({
-      where: { isPublished: true },
-      orderBy: [{ sortOrder: "asc" }, { title: "asc" }],
-    });
-
-    if (rows.length > 0) {
-      return {
-        fromDatabase: true,
-        programs: rows.map((row) => ({
-          id: row.id,
-          title: row.title,
-          slug: row.slug,
-          description: row.description,
-          schedule: row.schedule,
-          location: row.location,
-          imageUrl: row.imageUrl,
-        })),
-      };
-    }
-  } catch {
-    // fall through
-  }
-
-  return {
-    fromDatabase: false,
-    programs: churchContent.programs.map((program, index) => ({
-      id: `fallback-program-${index}`,
-      title: program.title,
-      slug: program.title.toLowerCase().replace(/\s+/g, "-"),
-      description: program.description,
-    })),
-  };
-}
-
 export async function getPublicMinistries(): Promise<{
   ministries: PublicMinistry[];
   fromDatabase: boolean;
@@ -152,11 +112,11 @@ export async function getPublicMinistries(): Promise<{
 
   return {
     fromDatabase: false,
-    ministries: churchContent.programs.map((program, index) => ({
+    ministries: churchContent.ministries.map((ministry, index) => ({
       id: `fallback-ministry-${index}`,
-      name: program.title,
-      slug: program.title.toLowerCase().replace(/\s+/g, "-"),
-      description: program.description,
+      name: ministry.name,
+      slug: ministry.name.toLowerCase().replace(/\s+/g, "-"),
+      description: ministry.description,
       schedule: null,
       location: churchContent.contact.venue,
     })),

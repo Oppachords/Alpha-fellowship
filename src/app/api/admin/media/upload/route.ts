@@ -76,12 +76,6 @@ export async function POST(request: Request) {
             data: { imageUrl: upload.url },
           });
           break;
-        case "program":
-          await db.program.update({
-            where: { id: targetId },
-            data: { imageUrl: upload.url },
-          });
-          break;
         case "leader":
           await db.leader.update({
             where: { id: targetId },
