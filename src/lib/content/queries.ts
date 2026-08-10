@@ -122,6 +122,7 @@ export async function getPublicMinistries(): Promise<{
           description: row.description,
           schedule: row.schedule,
           location: row.location,
+          imageUrl: row.imageUrl,
         })),
       };
     }

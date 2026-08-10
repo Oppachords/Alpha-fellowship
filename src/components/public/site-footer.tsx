@@ -7,7 +7,7 @@ export function SiteFooter() {
 
   return (
     <footer className="bg-background border-t border-border py-12">
-      <div className="container-wide max-w-5xl px-6">
+      <div className="site-shell max-w-5xl">
         <div className="flex flex-col md:flex-row items-start justify-between gap-8">
           <div className="text-center md:text-left">
             <p className="font-serif text-base font-semibold text-foreground">

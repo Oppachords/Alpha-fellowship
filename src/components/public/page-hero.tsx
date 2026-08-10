@@ -6,9 +6,9 @@ type PageHeroProps = {
 
 export function PageHero({ eyebrow, title, description }: PageHeroProps) {
   return (
-    <section className="relative bg-sky-deep pt-32 pb-20 px-6">
+    <section className="relative bg-sky-deep pt-32 pb-20">
       <div className="absolute inset-0 section-glow opacity-40" />
-      <div className="relative container-content text-center">
+      <div className="relative site-shell text-center">
         <p className="type-eyebrow-hero mb-4">{eyebrow}</p>
         <h1 className="type-heading-lg mb-4 text-balance">{title}</h1>
         {description && (

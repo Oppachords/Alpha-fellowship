@@ -62,6 +62,7 @@ export type PublicMinistry = {
   description: string | null;
   schedule: string | null;
   location: string | null;
+  imageUrl?: string | null;
 };
 
 export type PublicChurchProfile = {
