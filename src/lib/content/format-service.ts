@@ -94,6 +94,15 @@ export type PublicLeader = {
   position: string;
   bio: string | null;
   photoUrl?: string | null;
+  isLeadership?: boolean;
+};
+
+export type PublicServiceTeamMember = {
+  id: string;
+  name: string | null;
+  position: string;
+  bio: string | null;
+  photoUrl?: string | null;
 };
 
 export type PublicMinistry = {

@@ -143,18 +143,60 @@ async function main() {
     where: { id: "leader-john-mukisa" },
     update: {
       isPublished: true,
+      position: "Pastor / Church Leadership",
       photoUrl: "/images/leaders/br-mukisa-john-jackson.png",
     },
     create: {
       id: "leader-john-mukisa",
       name: "BR Mukisa John Jackson",
-      position: "Church Leadership",
+      position: "Pastor / Church Leadership",
       bio: "Brother John Mukisa was Guild president at a great university in Kampala and was a person that loved leadership, so was his mind until God called him to ministry. He saw a number of young people at the University and he was touched to help the lives of the young people.",
       photoUrl: "/images/leaders/br-mukisa-john-jackson.png",
       isPublished: true,
       sortOrder: 0,
     },
   });
+
+  const serviceTeam = [
+    {
+      id: "leader-service-administrator",
+      position: "Service Administrator",
+      bio: "Coordinates weekly gatherings, schedules, and fellowship operations.",
+      sortOrder: 10,
+    },
+    {
+      id: "leader-head-media",
+      position: "Head Media",
+      bio: "Leads media, live stream, and digital communication for the fellowship.",
+      sortOrder: 11,
+    },
+    {
+      id: "leader-administrator",
+      position: "Administrator",
+      bio: "Supports church administration, records, and day-to-day coordination.",
+      sortOrder: 12,
+    },
+  ];
+
+  for (const member of serviceTeam) {
+    await prisma.leader.upsert({
+      where: { id: member.id },
+      update: {
+        position: member.position,
+        bio: member.bio,
+        isPublished: true,
+        sortOrder: member.sortOrder,
+      },
+      create: {
+        id: member.id,
+        name: member.position,
+        position: member.position,
+        bio: member.bio,
+        isPublished: true,
+        sortOrder: member.sortOrder,
+      },
+    });
+  }
 
   // Roles
   const roles = [
@@ -311,7 +353,7 @@ async function main() {
       description:
         "Humanitarian and community outreach under Alpha Fellowship. Mission: To empower and uplift vulnerable communities through sustainable outreach programs, education, health services, and youth empowerment initiatives. Vision: A society where every individual, especially the underserved, has access to opportunities, dignity, and a voice.",
       schedule: "Founded 4th April 2023",
-      location: "Grace Gardens Namungoona",
+      location: "Grace Gardens Namungoona, Kampala",
       isPublished: true,
       sortOrder: 5,
     },

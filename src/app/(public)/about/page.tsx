@@ -8,6 +8,7 @@ import {
   getEliteFoundationMinistry,
   getPublicChurchProfile,
   getPublicLeaders,
+  getPublicServiceTeam,
   getPublicTestimonials,
 } from "@/lib/content/queries";
 
@@ -18,12 +19,14 @@ export const metadata: Metadata = {
 };
 
 export default async function AboutPage() {
-  const [profile, { leaders }, eliteFoundation, { testimonials }] = await Promise.all([
-    getPublicChurchProfile(),
-    getPublicLeaders(),
-    getEliteFoundationMinistry(),
-    getPublicTestimonials(),
-  ]);
+  const [profile, { leaders }, { members: serviceTeam }, eliteFoundation, { testimonials }] =
+    await Promise.all([
+      getPublicChurchProfile(),
+      getPublicLeaders(),
+      getPublicServiceTeam(),
+      getEliteFoundationMinistry(),
+      getPublicTestimonials(),
+    ]);
 
   const storyParagraphs = (profile.story ?? churchContent.story.intro).split(/\n\n+/);
 
@@ -101,6 +104,48 @@ export default async function AboutPage() {
                     <p className="type-body-sm text-muted-foreground">{leader.bio}</p>
                   )}
                 </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="section-padding bg-cream">
+        <div className="container-wide">
+          <p className="type-eyebrow mb-4 text-center">Service team</p>
+          <h2 className="type-heading text-center mb-4">Behind the scenes</h2>
+          <p className="type-body-sm text-muted-foreground text-center max-w-2xl mx-auto mb-12">
+            Dedicated team members who help coordinate gatherings, media, and church
+            administration at Alpha Fellowship.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {serviceTeam.map((member) => (
+              <div
+                key={member.id}
+                className="rounded-2xl border border-border bg-white p-7 text-center"
+              >
+                {member.photoUrl ? (
+                  <div className="relative mx-auto mb-5 h-24 w-24 overflow-hidden rounded-full bg-muted">
+                    <Image
+                      src={member.photoUrl}
+                      alt={member.name ?? member.position}
+                      fill
+                      className="object-cover"
+                      sizes="96px"
+                    />
+                  </div>
+                ) : (
+                  <div className="mx-auto mb-5 flex h-24 w-24 items-center justify-center rounded-full border border-dashed border-border bg-muted/40 text-xs text-muted-foreground">
+                    Photo coming soon
+                  </div>
+                )}
+                {member.name && member.name !== member.position && (
+                  <h3 className="type-subheading mb-1">{member.name}</h3>
+                )}
+                <p className="type-label mb-3">{member.position}</p>
+                {member.bio && (
+                  <p className="type-body-sm text-muted-foreground">{member.bio}</p>
+                )}
               </div>
             ))}
           </div>

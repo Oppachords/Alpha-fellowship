@@ -56,9 +56,23 @@ export const churchContent = {
   leadership: [
     {
       name: "BR Mukisa John Jackson",
-      position: "Church Leadership",
+      position: "Pastor / Church Leadership",
       bio: "Brother John Mukisa was Guild president at a great university in Kampala and was a person that loved leadership, so was his mind until God called him to ministry.",
       photoUrl: "/images/leaders/br-mukisa-john-jackson.png",
+    },
+  ],
+  serviceTeam: [
+    {
+      position: "Service Administrator",
+      description: "Coordinates weekly gatherings, schedules, and fellowship operations.",
+    },
+    {
+      position: "Head Media",
+      description: "Leads media, live stream, and digital communication for the fellowship.",
+    },
+    {
+      position: "Administrator",
+      description: "Supports church administration, records, and day-to-day coordination.",
     },
   ],
   programs: [
@@ -88,7 +102,9 @@ export const churchContent = {
   ],
   eliteFoundation: {
     name: "Elite Foundation",
+    subtitle: "Humanitarian and community outreach under Alpha Fellowship",
     founded: "4th April 2023",
+    location: "Grace Gardens Namungoona, Kampala",
     mission:
       "To empower and uplift vulnerable communities through sustainable outreach programs, education, health services, and youth empowerment initiatives.",
     vision:
@@ -100,6 +116,8 @@ export const churchContent = {
       "Health & Sanitation Awareness",
       "Livelihood & Skills Development",
     ],
+    websiteUrl: "https://www.facebook.com/p/Elite-Foundation-Uganda-61576636170416",
+    contactUrl: "/contact",
   },
   payments: {
     mtn: {

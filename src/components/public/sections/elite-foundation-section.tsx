@@ -1,4 +1,6 @@
 import Image from "next/image";
+import Link from "next/link";
+import { ExternalLink, Mail, MapPin, Phone } from "lucide-react";
 import { churchContent } from "@/lib/content/church-content";
 
 type EliteFoundationSectionProps = {
@@ -12,11 +14,12 @@ export function EliteFoundationSection({
   schedule,
   description,
 }: EliteFoundationSectionProps) {
+  const { eliteFoundation, contact } = churchContent;
   const body =
     description ??
-    `${churchContent.eliteFoundation.mission}\n\n${churchContent.eliteFoundation.vision}`;
+    `${eliteFoundation.mission}\n\n${eliteFoundation.vision}`;
   const scheduleLine =
-    schedule ?? `Founded ${churchContent.eliteFoundation.founded}`;
+    schedule ?? `Founded ${eliteFoundation.founded}`;
 
   return (
     <section className="section-padding bg-cream">
@@ -40,11 +43,15 @@ export function EliteFoundationSection({
           </div>
 
           <div>
-            <p className="type-eyebrow mb-4">{name}</p>
-            <h2 className="type-heading mb-4">Where hope meets action</h2>
+            <p className="type-eyebrow mb-4">Community Outreach</p>
+            <h2 className="type-heading mb-2">{name}</h2>
+            <p className="type-body-sm text-muted-foreground mb-4">
+              {eliteFoundation.subtitle}
+            </p>
             {scheduleLine && (
               <p className="type-body-sm text-muted-foreground mb-6">{scheduleLine}</p>
             )}
+
             {body.split(/\n\n+/).map((paragraph) => (
               <p
                 key={paragraph.slice(0, 40)}
@@ -53,8 +60,9 @@ export function EliteFoundationSection({
                 {paragraph}
               </p>
             ))}
-            <ul className="flex flex-wrap gap-3 mt-8">
-              {churchContent.eliteFoundation.focusAreas.map((area) => (
+
+            <ul className="flex flex-wrap gap-3 mt-8 mb-8">
+              {eliteFoundation.focusAreas.map((area) => (
                 <li
                   key={area}
                   className="rounded-full border border-border bg-white px-4 py-2 type-body-sm text-foreground"
@@ -63,6 +71,45 @@ export function EliteFoundationSection({
                 </li>
               ))}
             </ul>
+
+            <dl className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8 type-body-sm text-muted-foreground">
+              <div className="flex items-start gap-2">
+                <MapPin className="h-4 w-4 shrink-0 mt-0.5 text-primary" />
+                <div>
+                  <dt className="font-medium text-foreground">Location</dt>
+                  <dd>{eliteFoundation.location}</dd>
+                </div>
+              </div>
+              <div className="flex items-start gap-2">
+                <Phone className="h-4 w-4 shrink-0 mt-0.5 text-primary" />
+                <div>
+                  <dt className="font-medium text-foreground">Phone</dt>
+                  <dd>{contact.phone}</dd>
+                </div>
+              </div>
+              <div className="flex items-start gap-2 sm:col-span-2">
+                <Mail className="h-4 w-4 shrink-0 mt-0.5 text-primary" />
+                <div>
+                  <dt className="font-medium text-foreground">Email</dt>
+                  <dd>{contact.email}</dd>
+                </div>
+              </div>
+            </dl>
+
+            <div className="flex flex-wrap gap-3">
+              <Link href={eliteFoundation.contactUrl} className="pill-btn-primary inline-flex">
+                Contact
+              </Link>
+              <Link
+                href={eliteFoundation.websiteUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="pill-btn-outline inline-flex items-center gap-2"
+              >
+                Visit Website
+                <ExternalLink className="h-4 w-4" />
+              </Link>
+            </div>
           </div>
         </div>
       </div>

@@ -9,6 +9,7 @@ import {
   type PublicGallery,
   type PublicGalleryItem,
   type PublicLeader,
+  type PublicServiceTeamMember,
   type PublicMinistry,
   type PublicProgram,
   type PublicService,
@@ -162,6 +163,16 @@ export async function getPublicMinistries(): Promise<{
   };
 }
 
+const SERVICE_TEAM_POSITIONS = new Set([
+  "Service Administrator",
+  "Head Media",
+  "Administrator",
+]);
+
+function isLeadershipPosition(position: string) {
+  return !SERVICE_TEAM_POSITIONS.has(position);
+}
+
 export async function getPublicLeaders(): Promise<{
   leaders: PublicLeader[];
   fromDatabase: boolean;
@@ -172,15 +183,18 @@ export async function getPublicLeaders(): Promise<{
       orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
     });
 
-    if (rows.length > 0) {
+    const leadershipRows = rows.filter((row) => isLeadershipPosition(row.position));
+
+    if (leadershipRows.length > 0) {
       return {
         fromDatabase: true,
-        leaders: rows.map((row) => ({
+        leaders: leadershipRows.map((row) => ({
           id: row.id,
           name: row.name,
           position: row.position,
           bio: row.bio,
           photoUrl: resolveLeaderPhoto(row.id, row.name, row.photoUrl),
+          isLeadership: true,
         })),
       };
     }
@@ -196,6 +210,47 @@ export async function getPublicLeaders(): Promise<{
       position: leader.position,
       bio: leader.bio,
       photoUrl: leader.photoUrl ?? null,
+      isLeadership: true,
+    })),
+  };
+}
+
+export async function getPublicServiceTeam(): Promise<{
+  members: PublicServiceTeamMember[];
+  fromDatabase: boolean;
+}> {
+  try {
+    const rows = await db.leader.findMany({
+      where: { isPublished: true },
+      orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+    });
+
+    const teamRows = rows.filter((row) => SERVICE_TEAM_POSITIONS.has(row.position));
+
+    if (teamRows.length > 0) {
+      return {
+        fromDatabase: true,
+        members: teamRows.map((row) => ({
+          id: row.id,
+          name: row.name,
+          position: row.position,
+          bio: row.bio,
+          photoUrl: resolveLeaderPhoto(row.id, row.name, row.photoUrl),
+        })),
+      };
+    }
+  } catch {
+    // fall through
+  }
+
+  return {
+    fromDatabase: false,
+    members: churchContent.serviceTeam.map((member, index) => ({
+      id: `fallback-service-${index}`,
+      name: null,
+      position: member.position,
+      bio: member.description,
+      photoUrl: null,
     })),
   };
 }
