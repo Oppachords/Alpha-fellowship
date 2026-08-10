@@ -49,6 +49,7 @@ export default async function SermonsPage() {
   return (
     <>
       <PageHero
+        imageKey="sermons"
         eyebrow="Messages"
         title="Sermons & teachings"
         description="Recent messages from Alpha Fellowship Uganda."

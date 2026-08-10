@@ -30,6 +30,7 @@ export default async function BlogPage() {
   return (
     <>
       <PageHero
+        imageKey="blog"
         eyebrow="Updates & reflections"
         title="Blog"
         description="Messages, teachings, and news from our fellowship community."

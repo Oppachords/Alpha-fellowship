@@ -35,6 +35,7 @@ export default async function CampaignsPage() {
   return (
     <>
       <PageHero
+        imageKey="campaigns"
         eyebrow="Make a difference"
         title="Campaigns & Outreach"
         description="Support our charity work, outreach programs, and community initiatives."

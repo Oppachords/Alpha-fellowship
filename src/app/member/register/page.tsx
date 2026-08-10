@@ -13,6 +13,7 @@ export default function MemberRegisterPage() {
   return (
     <>
       <PageHero
+        imageKey="members"
         eyebrow="Join us"
         title="Create your account"
         description="Register as a member of Alpha Fellowship Uganda. Your account will be activated after admin approval."

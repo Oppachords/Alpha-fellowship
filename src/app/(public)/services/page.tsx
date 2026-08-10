@@ -20,6 +20,7 @@ export default async function ServicesPage() {
   return (
     <>
       <PageHero
+        imageKey="services"
         eyebrow="A rhythm for the week"
         title="Gather with us"
         description={churchContent.serviceDescription}

@@ -21,6 +21,7 @@ export default function ContactPage() {
   return (
     <>
       <PageHero
+        imageKey="contact"
         eyebrow="Reach out"
         title="We'd love to hear from you"
         description="Questions about visiting, counselling, or getting involved? Send us a message."

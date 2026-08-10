@@ -26,6 +26,7 @@ export default async function GalleryDetailPage({ params }: Props) {
   return (
     <>
       <PageHero
+        imageKey="gallery"
         eyebrow="Gallery"
         title={gallery.title}
         description={gallery.description ?? undefined}

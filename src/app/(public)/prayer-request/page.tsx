@@ -12,6 +12,7 @@ export default function PrayerRequestPage() {
   return (
     <>
       <PageHero
+        imageKey="prayer"
         eyebrow="Pastoral care"
         title="Prayer request"
         description="Share what you'd like us to pray for. Our team is honored to stand with you."

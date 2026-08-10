@@ -15,6 +15,7 @@ export default async function ProgramsPage() {
   return (
     <>
       <PageHero
+        imageKey="programs"
         eyebrow="What we do"
         title="Programs"
         description="Weekly programs, outreach, and fellowship activities at Alpha Fellowship."

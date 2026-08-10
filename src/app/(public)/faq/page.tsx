@@ -21,6 +21,7 @@ export default async function FaqPage() {
   return (
     <>
       <PageHero
+        imageKey="faq"
         eyebrow="Questions"
         title="Frequently asked questions"
         description="Answers to common questions about visiting, membership, and our gatherings."

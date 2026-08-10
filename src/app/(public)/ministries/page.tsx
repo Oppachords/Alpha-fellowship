@@ -23,6 +23,7 @@ export default async function MinistriesPage() {
   return (
     <>
       <PageHero
+        imageKey="ministries"
         eyebrow="How we serve"
         title="Ministries"
         description="Areas of fellowship, outreach, and service at Alpha Fellowship Uganda."

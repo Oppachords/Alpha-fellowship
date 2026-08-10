@@ -30,6 +30,7 @@ export default async function EventsPage() {
   return (
     <>
       <PageHero
+        imageKey="events"
         eyebrow="What's happening"
         title="Events"
         description="Upcoming gatherings, outreaches, and special meetings at Alpha Fellowship."

@@ -50,6 +50,7 @@ export default function GetInvolvedPage() {
   return (
     <>
       <PageHero
+        imageKey="involved"
         eyebrow="Take action"
         title="Get involved"
         description="Connect, serve, and grow with Alpha Fellowship. Find your place in our community."

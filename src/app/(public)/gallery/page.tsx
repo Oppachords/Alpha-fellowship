@@ -15,6 +15,7 @@ export default async function GalleryPage() {
   return (
     <>
       <PageHero
+        imageKey="gallery"
         eyebrow="Moments"
         title="Gallery"
         description="Snapshots from our fellowship, outreach, and community life."

@@ -26,6 +26,7 @@ export default async function WatchLivePage() {
   return (
     <>
       <PageHero
+        imageKey="watch-live"
         eyebrow="Watch & listen"
         title="Join us online"
         description="Experience worship, the word of God, and prayer from wherever you are."

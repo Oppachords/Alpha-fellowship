@@ -12,6 +12,7 @@ export default function VolunteerPage() {
   return (
     <>
       <PageHero
+        imageKey="involved"
         eyebrow="Serve"
         title="Volunteer with us"
         description="Share your gifts and availability — we'd love to connect you with a team."

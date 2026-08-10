@@ -17,6 +17,7 @@ export default async function GivePage() {
   return (
     <>
       <PageHero
+        imageKey="give"
         eyebrow="Support the mission"
         title="Give generously"
         description="Your giving helps us reach young people, support outreach, and spread the Gospel across Uganda."

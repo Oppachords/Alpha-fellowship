@@ -16,6 +16,7 @@ export default function MembersLandingPage() {
   return (
     <>
       <PageHero
+        imageKey="members"
         eyebrow="Our community"
         title="Members"
         description="Join a vibrant fellowship of young people walking in faith, prayer, and growth together."

@@ -35,6 +35,7 @@ export default async function AboutPage() {
   return (
     <>
       <PageHero
+        imageKey="about"
         eyebrow="Who we are"
         title="About Alpha Fellowship"
         description={profile.tagline ?? churchContent.tagline}
