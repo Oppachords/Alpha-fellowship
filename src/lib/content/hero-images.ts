@@ -1,4 +1,5 @@
 export const heroImages = {
+  sanctuary: "/images/hero-sanctuary.png",
   worshipCommunity: "/images/heroes/worship-community.png",
   worshipGathering: "/images/heroes/worship-gathering.png",
   sunsetSilhouettes: "/images/heroes/sunset-silhouettes.png",
@@ -9,6 +10,7 @@ export const heroImages = {
 } as const;
 
 export const homeHeroImages = [
+  heroImages.sanctuary,
   heroImages.worshipCommunity,
   heroImages.worshipGathering,
   heroImages.sunsetWorship,

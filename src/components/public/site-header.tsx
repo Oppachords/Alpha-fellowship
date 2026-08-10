@@ -2,15 +2,9 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { ChevronDown, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { buttonVariants } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
   Sheet,
   SheetContent,
@@ -24,66 +18,35 @@ import {
 } from "@/lib/navigation/public-nav";
 import { cn } from "@/lib/utils";
 
+const desktopNavLinks = [...headerNavLinks, ...headerOverflowNavLinks];
+
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
 
   return (
     <header className="fixed top-0 z-50 w-full bg-sky-deep/95 backdrop-blur-md shadow-sm">
-      <div className="site-shell flex h-16 lg:h-[4.5rem] items-center gap-6 lg:gap-8">
+      <div className="mx-auto flex h-16 w-full max-w-[100rem] items-center gap-3 px-4 sm:px-6 lg:h-[4.5rem] lg:gap-4 lg:px-8 xl:px-10">
         <Link href="/" className="type-logo shrink-0">
           Alpha Fellowship
         </Link>
 
-        <nav className="hidden lg:flex min-w-0 flex-1 items-center gap-5 xl:gap-6">
-          {headerNavLinks.map((item) => (
+        <nav className="hidden min-w-0 flex-1 items-center justify-center gap-x-2.5 lg:flex xl:gap-x-3.5 2xl:gap-x-4">
+          {desktopNavLinks.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="type-nav whitespace-nowrap hover:text-white transition-colors"
+              className="type-nav whitespace-nowrap text-[13px] transition-colors hover:text-white xl:text-sm"
             >
               {item.label}
             </Link>
           ))}
-
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              className={cn(
-                buttonVariants({ variant: "ghost" }),
-                "hidden lg:inline-flex xl:hidden h-9 px-2 text-white/85 hover:text-white hover:bg-white/10"
-              )}
-            >
-              More
-              <ChevronDown className="ml-1 h-4 w-4" />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="min-w-44">
-              {headerOverflowNavLinks.map((item) => (
-                <DropdownMenuItem key={item.href}>
-                  <Link href={item.href} className="w-full">
-                    {item.label}
-                  </Link>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          <div className="hidden xl:flex items-center gap-5 xl:gap-6">
-            {headerOverflowNavLinks.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="type-nav whitespace-nowrap hover:text-white transition-colors"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </div>
         </nav>
 
-        <div className="hidden lg:flex items-center gap-2 shrink-0">
-          <Link href="/give" className="pill-btn-ghost py-2 px-4 text-sm">
+        <div className="hidden shrink-0 items-center gap-2 lg:flex">
+          <Link href="/give" className="pill-btn-ghost px-3 py-1.5 text-xs xl:px-4 xl:py-2 xl:text-sm">
             Donate
           </Link>
-          <Link href="/services" className="pill-btn-white py-2 px-4 text-sm">
+          <Link href="/services" className="pill-btn-white px-3 py-1.5 text-xs xl:px-4 xl:py-2 xl:text-sm">
             Plan a visit
           </Link>
         </div>
@@ -92,16 +55,16 @@ export function SiteHeader() {
           <SheetTrigger
             className={cn(
               buttonVariants({ variant: "ghost", size: "icon" }),
-              "lg:hidden text-white hover:bg-white/10 shrink-0 ml-auto"
+              "ml-auto shrink-0 text-white hover:bg-white/10 lg:hidden"
             )}
             aria-label="Open menu"
           >
             <Menu className="h-5 w-5" />
           </SheetTrigger>
-          <SheetContent side="right" className="w-full sm:w-[360px] bg-background">
+          <SheetContent side="right" className="w-full bg-background sm:w-[360px]">
             <SheetTitle className="sr-only">Menu</SheetTitle>
-            <div className="flex flex-col h-full pt-4">
-              <div className="flex items-center justify-between mb-8">
+            <div className="flex h-full flex-col pt-4">
+              <div className="mb-8 flex items-center justify-between">
                 <span className="font-serif text-lg font-semibold text-foreground">
                   Alpha Fellowship
                 </span>
@@ -119,7 +82,7 @@ export function SiteHeader() {
                     key={item.href}
                     href={item.href}
                     onClick={() => setOpen(false)}
-                    className="py-3 font-serif text-lg font-semibold text-foreground border-b border-border/60"
+                    className="border-b border-border/60 py-3 font-serif text-lg font-semibold text-foreground"
                   >
                     {item.label}
                   </Link>
