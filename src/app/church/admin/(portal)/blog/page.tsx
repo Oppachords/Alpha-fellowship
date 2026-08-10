@@ -1,16 +1,21 @@
 import Link from "next/link";
 import { format } from "date-fns";
 import { AdminHeader } from "@/components/admin/admin-header";
+import { AdminRecordActions } from "@/components/admin/admin-record-actions";
+import { DeleteRecordButton } from "@/components/admin/delete-record-button";
 import { CreateBlogForm } from "@/components/admin/create-blog-form";
+import { EditBlogForm } from "@/components/admin/edit-blog-form";
+import {
+  deleteBlogPostAction,
+  toggleBlogPublishFormAction,
+} from "@/lib/actions/blog-admin";
 import { db } from "@/lib/db";
 
 async function getBlogPosts() {
   try {
     return await db.blogPost.findMany({
       orderBy: { createdAt: "desc" },
-      include: {
-        author: { select: { name: true } },
-      },
+      include: { author: { select: { name: true } } },
       take: 40,
     });
   } catch {
@@ -67,15 +72,29 @@ export default async function AdminBlogPage() {
                       {post.excerpt}
                     </p>
                   )}
-                  {post.status === "published" && (
-                    <Link
-                      href={`/blog/${post.slug}`}
-                      target="_blank"
-                      className="text-sm text-primary hover:underline"
-                    >
-                      View on website
-                    </Link>
-                  )}
+                  <div className="flex flex-wrap gap-3 mb-2">
+                    {post.status === "published" && (
+                      <Link
+                        href={`/blog/${post.slug}`}
+                        target="_blank"
+                        className="text-sm text-primary hover:underline"
+                      >
+                        View on website
+                      </Link>
+                    )}
+                    <form action={toggleBlogPublishFormAction}>
+                      <input type="hidden" name="id" value={post.id} />
+                      <button type="submit" className="text-sm text-primary hover:underline">
+                        {post.status === "published" ? "Unpublish" : "Publish"}
+                      </button>
+                    </form>
+                  </div>
+                  <AdminRecordActions
+                    editForm={<EditBlogForm post={post} />}
+                    deleteButton={
+                      <DeleteRecordButton id={post.id} action={deleteBlogPostAction} />
+                    }
+                  />
                 </article>
               ))
             )}

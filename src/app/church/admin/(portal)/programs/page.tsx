@@ -1,6 +1,10 @@
 import { AdminHeader } from "@/components/admin/admin-header";
+import { AdminRecordActions } from "@/components/admin/admin-record-actions";
+import { DeleteRecordButton } from "@/components/admin/delete-record-button";
 import { CreateProgramForm } from "@/components/admin/create-program-form";
 import { ProgramImageUpload } from "@/components/admin/program-image-upload";
+import { EditProgramForm } from "@/components/admin/cms/operations-forms";
+import { deleteProgramAction } from "@/lib/actions/church-content-admin";
 import { db } from "@/lib/db";
 
 async function getPrograms() {
@@ -78,6 +82,12 @@ export default async function AdminProgramsPage() {
                           currentUrl={program.imageUrl}
                         />
                       </div>
+                      <AdminRecordActions
+                        editForm={<EditProgramForm program={program} />}
+                        deleteButton={
+                          <DeleteRecordButton id={program.id} action={deleteProgramAction} />
+                        }
+                      />
                     </div>
                   </div>
                 </article>

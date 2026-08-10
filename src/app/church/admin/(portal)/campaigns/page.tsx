@@ -1,5 +1,9 @@
 import { AdminHeader } from "@/components/admin/admin-header";
+import { AdminRecordActions } from "@/components/admin/admin-record-actions";
+import { DeleteRecordButton } from "@/components/admin/delete-record-button";
 import { CreateCampaignForm } from "@/components/admin/create-campaign-form";
+import { EditCampaignForm } from "@/components/admin/cms/operations-forms";
+import { deleteCampaignAction } from "@/lib/actions/church-crud";
 import { db } from "@/lib/db";
 
 async function getCampaigns() {
@@ -61,6 +65,12 @@ export default async function AdminCampaignsPage() {
                       {formatCurrency(Number(campaign.goalAmount))}
                     </p>
                   )}
+                  <AdminRecordActions
+                    editForm={<EditCampaignForm campaign={campaign} />}
+                    deleteButton={
+                      <DeleteRecordButton id={campaign.id} action={deleteCampaignAction} />
+                    }
+                  />
                 </article>
               ))
             )}

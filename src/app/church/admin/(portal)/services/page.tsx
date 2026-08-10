@@ -1,6 +1,10 @@
 import { formatTime, serviceDayLabel, serviceDuration } from "@/lib/content/format-service";
 import { AdminHeader } from "@/components/admin/admin-header";
+import { AdminRecordActions } from "@/components/admin/admin-record-actions";
+import { DeleteRecordButton } from "@/components/admin/delete-record-button";
 import { CreateServiceForm } from "@/components/admin/create-service-form";
+import { EditServiceForm } from "@/components/admin/cms/operations-forms";
+import { deleteServiceAction } from "@/lib/actions/church-content-admin";
 import { db } from "@/lib/db";
 
 async function getServices() {
@@ -63,6 +67,12 @@ export default async function AdminServicesPage() {
                   {service.description && (
                     <p className="text-sm text-muted-foreground mt-2">{service.description}</p>
                   )}
+                  <AdminRecordActions
+                    editForm={<EditServiceForm service={service} />}
+                    deleteButton={
+                      <DeleteRecordButton id={service.id} action={deleteServiceAction} />
+                    }
+                  />
                 </article>
               ))
             )}

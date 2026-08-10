@@ -1,25 +1,149 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { auth } from "@/lib/auth";
-import { hasAdminRole } from "@/lib/auth/permissions";
 import { ADMIN_BASE_PATH } from "@/lib/constants/admin";
 import { createAuditLog } from "@/lib/security/audit-log";
 import { db } from "@/lib/db";
+import { requireAdmin, type ActionState } from "@/lib/actions/admin-helpers";
+import { slugify } from "@/lib/utils/slugify";
 
-async function requireAdmin() {
-  const session = await auth();
-  if (!session?.user || !hasAdminRole(session.user.roles)) {
-    return { error: "Unauthorized." as const, session: null };
+export async function updateServiceAction(_prev: ActionState, formData: FormData) {
+  const authResult = await requireAdmin();
+  if (authResult.error) return { error: authResult.error };
+
+  const id = formData.get("id") as string;
+  const name = (formData.get("name") as string)?.trim();
+  const dayOfWeek = Number(formData.get("dayOfWeek"));
+  const startTime = (formData.get("startTime") as string)?.trim();
+  const endTime = (formData.get("endTime") as string)?.trim();
+  const venue = (formData.get("venue") as string)?.trim();
+  const description = (formData.get("description") as string)?.trim();
+  const isActive = formData.get("isActive") === "on";
+
+  if (!id || !name || Number.isNaN(dayOfWeek) || !startTime) {
+    return { error: "Name, day, and start time are required." };
   }
-  return { error: null, session };
+
+  try {
+    await db.service.update({
+      where: { id },
+      data: {
+        name,
+        dayOfWeek,
+        startTime,
+        endTime: endTime || null,
+        venue: venue || null,
+        description: description || null,
+        isActive,
+      },
+    });
+
+    await createAuditLog({
+      userId: authResult.session!.user.id,
+      action: "update",
+      resource: "service",
+      resourceId: id,
+      details: { name },
+    });
+
+    revalidatePath("/services");
+    revalidatePath("/");
+    revalidatePath(`${ADMIN_BASE_PATH}/services`);
+    return { success: true };
+  } catch {
+    return { error: "Failed to update service." };
+  }
 }
 
-function slugify(text: string) {
-  return text
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
+export async function deleteServiceAction(_prev: ActionState, formData: FormData) {
+  const authResult = await requireAdmin();
+  if (authResult.error) return { error: authResult.error };
+
+  const id = formData.get("id") as string;
+  if (!id) return { error: "Missing record id." };
+
+  try {
+    await db.service.delete({ where: { id } });
+    await createAuditLog({
+      userId: authResult.session!.user.id,
+      action: "delete",
+      resource: "service",
+      resourceId: id,
+    });
+    revalidatePath("/services");
+    revalidatePath("/");
+    revalidatePath(`${ADMIN_BASE_PATH}/services`);
+    return { success: true };
+  } catch {
+    return { error: "Failed to delete service." };
+  }
+}
+
+export async function updateProgramAction(_prev: ActionState, formData: FormData) {
+  const authResult = await requireAdmin();
+  if (authResult.error) return { error: authResult.error };
+
+  const id = formData.get("id") as string;
+  const title = (formData.get("title") as string)?.trim();
+  const description = (formData.get("description") as string)?.trim();
+  const schedule = (formData.get("schedule") as string)?.trim();
+  const location = (formData.get("location") as string)?.trim();
+  const isPublished = formData.get("isPublished") === "on";
+
+  if (!id || !title) return { error: "Program title is required." };
+
+  try {
+    await db.program.update({
+      where: { id },
+      data: {
+        title,
+        description: description || null,
+        schedule: schedule || null,
+        location: location || null,
+        isPublished,
+      },
+    });
+
+    await createAuditLog({
+      userId: authResult.session!.user.id,
+      action: "update",
+      resource: "program",
+      resourceId: id,
+      details: { title },
+    });
+
+    revalidatePath("/services");
+    revalidatePath("/programs");
+    revalidatePath("/ministries");
+    revalidatePath(`${ADMIN_BASE_PATH}/programs`);
+    return { success: true };
+  } catch {
+    return { error: "Failed to update program." };
+  }
+}
+
+export async function deleteProgramAction(_prev: ActionState, formData: FormData) {
+  const authResult = await requireAdmin();
+  if (authResult.error) return { error: authResult.error };
+
+  const id = formData.get("id") as string;
+  if (!id) return { error: "Missing record id." };
+
+  try {
+    await db.program.delete({ where: { id } });
+    await createAuditLog({
+      userId: authResult.session!.user.id,
+      action: "delete",
+      resource: "program",
+      resourceId: id,
+    });
+    revalidatePath("/services");
+    revalidatePath("/programs");
+    revalidatePath(`${ADMIN_BASE_PATH}/programs`);
+    return { success: true };
+  } catch {
+    return { error: "Failed to delete program." };
+  }
 }
 
 export async function createServiceAction(
@@ -107,6 +231,7 @@ export async function createProgramAction(
     });
 
     revalidatePath("/services");
+    revalidatePath("/programs");
     revalidatePath("/ministries");
     revalidatePath(`${ADMIN_BASE_PATH}/programs`);
     return { success: true };

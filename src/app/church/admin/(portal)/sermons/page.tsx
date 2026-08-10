@@ -1,67 +1,65 @@
-import { format } from "date-fns";
 import { AdminHeader } from "@/components/admin/admin-header";
 import { AdminRecordActions } from "@/components/admin/admin-record-actions";
 import { DeleteRecordButton } from "@/components/admin/delete-record-button";
-import { CreateEventForm } from "@/components/admin/create-event-form";
-import { EditEventForm } from "@/components/admin/cms/operations-forms";
-import { deleteEventAction } from "@/lib/actions/church-crud";
+import {
+  CreateSermonForm,
+  EditSermonForm,
+} from "@/components/admin/cms/content-forms";
+import { deleteSermonAction } from "@/lib/actions/content-cms";
 import { db } from "@/lib/db";
 
-async function getEvents() {
+async function getSermons() {
   try {
-    return await db.event.findMany({
-      orderBy: { startDate: "desc" },
-      take: 30,
+    return await db.sermon.findMany({
+      orderBy: [{ sermonDate: "desc" }, { createdAt: "desc" }],
+      take: 40,
     });
   } catch {
     return null;
   }
 }
 
-export default async function AdminEventsPage() {
-  const events = await getEvents();
+export default async function AdminSermonsPage() {
+  const sermons = await getSermons();
 
   return (
     <>
-      <AdminHeader title="Events" />
+      <AdminHeader title="Sermons" />
       <div className="flex-1 p-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-1">
-            <CreateEventForm />
+            <CreateSermonForm />
           </div>
           <div className="lg:col-span-2 space-y-3">
-            {events === null ? (
+            {sermons === null ? (
               <div className="rounded-2xl border border-border bg-white p-8 text-center">
                 <p className="type-body-sm text-muted-foreground">
-                  Connect the database to manage events.
+                  Connect the database to manage sermons.
                 </p>
               </div>
-            ) : events.length === 0 ? (
+            ) : sermons.length === 0 ? (
               <div className="rounded-2xl border border-border bg-white p-8 text-center">
-                <p className="type-body-sm text-muted-foreground">No events yet.</p>
+                <p className="type-body-sm text-muted-foreground">No sermons yet.</p>
               </div>
             ) : (
-              events.map((event) => (
+              sermons.map((sermon) => (
                 <article
-                  key={event.id}
+                  key={sermon.id}
                   className="rounded-2xl border border-border bg-white p-5"
                 >
                   <div className="flex justify-between gap-4 mb-2">
-                    <h2 className="font-medium text-foreground">{event.title}</h2>
+                    <h2 className="font-medium">{sermon.title}</h2>
                     <span className="text-xs text-muted-foreground shrink-0">
-                      {format(event.startDate, "d MMM yyyy")}
+                      {sermon.isPublished ? "Published" : "Draft"}
                     </span>
                   </div>
-                  <p className="text-xs text-muted-foreground capitalize mb-2">
-                    {event.status} · {event.isPublished ? "Published" : "Draft"}
-                  </p>
-                  {event.description && (
-                    <p className="text-sm text-muted-foreground">{event.description}</p>
+                  {sermon.speaker && (
+                    <p className="text-sm text-muted-foreground">{sermon.speaker}</p>
                   )}
                   <AdminRecordActions
-                    editForm={<EditEventForm event={event} />}
+                    editForm={<EditSermonForm sermon={sermon} />}
                     deleteButton={
-                      <DeleteRecordButton id={event.id} action={deleteEventAction} />
+                      <DeleteRecordButton id={sermon.id} action={deleteSermonAction} />
                     }
                   />
                 </article>

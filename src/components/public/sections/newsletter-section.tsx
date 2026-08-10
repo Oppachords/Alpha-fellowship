@@ -1,18 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useActionState } from "react";
+import { subscribeNewsletterAction } from "@/lib/actions/newsletter";
+import { HoneypotField } from "@/components/public/honeypot-field";
 import { Send, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 export function NewsletterSection() {
-  const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
-
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (email) setSubmitted(true);
-  }
+  const [state, formAction, pending] = useActionState(
+    subscribeNewsletterAction,
+    undefined
+  );
 
   return (
     <section className="section-padding-sm">
@@ -32,32 +31,43 @@ export function NewsletterSection() {
               Alpha Fellowship.
             </p>
 
-            {submitted ? (
+            {state?.success ? (
               <div className="flex items-center justify-center gap-2 text-brand-gold">
                 <CheckCircle className="h-5 w-5" />
-                <p className="font-medium">
-                  Thank you for subscribing!
-                </p>
+                <p className="font-medium">Thank you for subscribing!</p>
               </div>
             ) : (
               <form
-                onSubmit={handleSubmit}
-                className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto"
+                action={formAction}
+                className="flex flex-col gap-4 max-w-md mx-auto"
               >
+                <HoneypotField />
                 <Input
                   type="email"
+                  name="email"
                   placeholder="Your email address"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
                   required
                   className="bg-white/10 border-white/15 text-white placeholder:text-white/40 h-12 rounded-full px-5 focus-visible:ring-brand"
                 />
+                <label className="flex items-start gap-2 text-left text-sm text-white/70">
+                  <input
+                    type="checkbox"
+                    name="hasConsent"
+                    required
+                    className="mt-1 rounded border-white/30"
+                  />
+                  <span>I agree to receive newsletter emails from Alpha Fellowship.</span>
+                </label>
+                {state?.error && (
+                  <p className="text-sm text-red-300">{state.error}</p>
+                )}
                 <Button
                   type="submit"
-                  className="bg-brand hover:bg-brand/90 h-12 px-7 rounded-full shrink-0"
+                  disabled={pending}
+                  className="bg-brand hover:bg-brand/90 h-12 px-7 rounded-full shrink-0 mx-auto"
                 >
                   <Send className="mr-2 h-4 w-4" />
-                  Subscribe
+                  {pending ? "Subscribing…" : "Subscribe"}
                 </Button>
               </form>
             )}

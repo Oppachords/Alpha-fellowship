@@ -8,6 +8,7 @@ import {
   getEliteFoundationMinistry,
   getPublicChurchProfile,
   getPublicLeaders,
+  getPublicTestimonials,
 } from "@/lib/content/queries";
 
 export const metadata: Metadata = {
@@ -17,10 +18,11 @@ export const metadata: Metadata = {
 };
 
 export default async function AboutPage() {
-  const [profile, { leaders }, eliteFoundation] = await Promise.all([
+  const [profile, { leaders }, eliteFoundation, { testimonials }] = await Promise.all([
     getPublicChurchProfile(),
     getPublicLeaders(),
     getEliteFoundationMinistry(),
+    getPublicTestimonials(),
   ]);
 
   const storyParagraphs = (profile.story ?? churchContent.story.intro).split(/\n\n+/);
@@ -104,6 +106,28 @@ export default async function AboutPage() {
           </div>
         </div>
       </section>
+
+      {testimonials.length > 0 && (
+        <section className="section-padding bg-cream">
+          <div className="container-wide">
+            <p className="type-eyebrow mb-4 text-center">Stories</p>
+            <h2 className="type-heading text-center mb-12">What people say</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {testimonials.map((item) => (
+                <blockquote
+                  key={item.id}
+                  className="rounded-2xl border border-border bg-white p-7"
+                >
+                  <p className="type-body-sm text-muted-foreground mb-4 italic">
+                    &ldquo;{item.content}&rdquo;
+                  </p>
+                  <footer className="type-subheading text-base">{item.name}</footer>
+                </blockquote>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {eliteFoundation && (
         <EliteFoundationSection

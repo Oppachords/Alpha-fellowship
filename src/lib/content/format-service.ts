@@ -46,6 +46,46 @@ export type PublicProgram = {
   title: string;
   slug: string;
   description: string | null;
+  schedule?: string | null;
+  location?: string | null;
+  imageUrl?: string | null;
+};
+
+export type PublicGallery = {
+  id: string;
+  title: string;
+  slug: string;
+  description: string | null;
+  coverImage: string | null;
+  itemCount: number;
+};
+
+export type PublicGalleryItem = {
+  id: string;
+  url: string;
+  altText: string | null;
+  caption: string | null;
+};
+
+export type PublicFaq = {
+  id: string;
+  question: string;
+  answer: string;
+  category: string | null;
+};
+
+export type PublicTestimonial = {
+  id: string;
+  name: string;
+  content: string;
+  photoUrl: string | null;
+};
+
+export type PublicAnnouncement = {
+  id: string;
+  title: string;
+  content: string;
+  type: string;
 };
 
 export type PublicLeader = {

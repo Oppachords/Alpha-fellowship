@@ -3,11 +3,16 @@ import {
   formatTime,
   serviceDayLabel,
   serviceDuration,
+  type PublicAnnouncement,
   type PublicChurchProfile,
+  type PublicFaq,
+  type PublicGallery,
+  type PublicGalleryItem,
   type PublicLeader,
   type PublicMinistry,
   type PublicProgram,
   type PublicService,
+  type PublicTestimonial,
 } from "@/lib/content/format-service";
 import { db } from "@/lib/db";
 
@@ -95,6 +100,9 @@ export async function getPublicPrograms(): Promise<{
           title: row.title,
           slug: row.slug,
           description: row.description,
+          schedule: row.schedule,
+          location: row.location,
+          imageUrl: row.imageUrl,
         })),
       };
     }
@@ -254,3 +262,160 @@ export async function getEliteFoundationMinistry(): Promise<PublicMinistry | nul
 }
 
 export { formatTime };
+
+export async function getPublicGalleries(): Promise<{
+  galleries: PublicGallery[];
+  fromDatabase: boolean;
+}> {
+  try {
+    const rows = await db.gallery.findMany({
+      where: { isPublished: true },
+      orderBy: [{ sortOrder: "asc" }, { title: "asc" }],
+      include: { _count: { select: { items: true } } },
+    });
+
+    if (rows.length > 0) {
+      return {
+        fromDatabase: true,
+        galleries: rows.map((row) => ({
+          id: row.id,
+          title: row.title,
+          slug: row.slug,
+          description: row.description,
+          coverImage: row.coverImage,
+          itemCount: row._count.items,
+        })),
+      };
+    }
+  } catch {
+    // fall through
+  }
+
+  return { fromDatabase: false, galleries: [] };
+}
+
+export async function getPublicGalleryBySlug(slug: string): Promise<{
+  gallery: {
+    id: string;
+    title: string;
+    slug: string;
+    description: string | null;
+    coverImage: string | null;
+  } | null;
+  items: PublicGalleryItem[];
+}> {
+  try {
+    const gallery = await db.gallery.findFirst({
+      where: { slug, isPublished: true },
+      include: {
+        items: {
+          orderBy: { sortOrder: "asc" },
+          include: { media: true },
+        },
+      },
+    });
+
+    if (gallery) {
+      return {
+        gallery: {
+          id: gallery.id,
+          title: gallery.title,
+          slug: gallery.slug,
+          description: gallery.description,
+          coverImage: gallery.coverImage,
+        },
+        items: gallery.items.map((item) => ({
+          id: item.id,
+          url: item.media.url,
+          altText: item.media.altText,
+          caption: item.caption,
+        })),
+      };
+    }
+  } catch {
+    // fall through
+  }
+
+  return { gallery: null, items: [] };
+}
+
+export async function getPublicFaqs(): Promise<{
+  faqs: PublicFaq[];
+  fromDatabase: boolean;
+}> {
+  try {
+    const rows = await db.fAQ.findMany({
+      where: { isPublished: true },
+      orderBy: [{ sortOrder: "asc" }, { question: "asc" }],
+    });
+
+    if (rows.length > 0) {
+      return {
+        fromDatabase: true,
+        faqs: rows.map((row) => ({
+          id: row.id,
+          question: row.question,
+          answer: row.answer,
+          category: row.category,
+        })),
+      };
+    }
+  } catch {
+    // fall through
+  }
+
+  return { fromDatabase: false, faqs: [] };
+}
+
+export async function getPublicTestimonials(): Promise<{
+  testimonials: PublicTestimonial[];
+  fromDatabase: boolean;
+}> {
+  try {
+    const rows = await db.testimonial.findMany({
+      where: { isPublished: true, hasConsent: true },
+      orderBy: [{ isFeatured: "desc" }, { sortOrder: "asc" }],
+      take: 12,
+    });
+
+    if (rows.length > 0) {
+      return {
+        fromDatabase: true,
+        testimonials: rows.map((row) => ({
+          id: row.id,
+          name: row.name,
+          content: row.content,
+          photoUrl: row.photoUrl,
+        })),
+      };
+    }
+  } catch {
+    // fall through
+  }
+
+  return { fromDatabase: false, testimonials: [] };
+}
+
+export async function getActiveAnnouncements(): Promise<PublicAnnouncement[]> {
+  try {
+    const now = new Date();
+    const rows = await db.announcement.findMany({
+      where: {
+        isPublished: true,
+        startDate: { lte: now },
+        OR: [{ expiryDate: null }, { expiryDate: { gte: now } }],
+      },
+      orderBy: [{ isFeatured: "desc" }, { startDate: "desc" }],
+      take: 5,
+    });
+
+    return rows.map((row) => ({
+      id: row.id,
+      title: row.title,
+      content: row.content,
+      type: row.type,
+    }));
+  } catch {
+    return [];
+  }
+}

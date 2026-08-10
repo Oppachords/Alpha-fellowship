@@ -1,6 +1,10 @@
 import { AdminHeader } from "@/components/admin/admin-header";
+import { AdminRecordActions } from "@/components/admin/admin-record-actions";
+import { DeleteRecordButton } from "@/components/admin/delete-record-button";
 import { CreateMinistryForm } from "@/components/admin/create-ministry-form";
 import { MinistryImageUpload } from "@/components/admin/ministry-image-upload";
+import { EditMinistryForm } from "@/components/admin/cms/operations-forms";
+import { deleteMinistryAction } from "@/lib/actions/church-crud";
 import { db } from "@/lib/db";
 
 async function getMinistries() {
@@ -68,6 +72,12 @@ export default async function AdminMinistriesPage() {
                         ministryId={ministry.id}
                         ministryName={ministry.name}
                         currentUrl={ministry.imageUrl}
+                      />
+                      <AdminRecordActions
+                        editForm={<EditMinistryForm ministry={ministry} />}
+                        deleteButton={
+                          <DeleteRecordButton id={ministry.id} action={deleteMinistryAction} />
+                        }
                       />
                     </div>
                   </div>

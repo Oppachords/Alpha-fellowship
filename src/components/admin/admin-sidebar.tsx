@@ -21,6 +21,13 @@ import {
   LogOut,
   ExternalLink,
   Newspaper,
+  UserCircle,
+  Images,
+  Mic,
+  Quote,
+  HelpCircle,
+  Bell,
+  Mail,
 } from "lucide-react";
 import { signOutAction } from "@/lib/actions/auth";
 import { ADMIN_BASE_PATH } from "@/lib/constants/admin";
@@ -72,6 +79,46 @@ const navItems = [
     label: "Blog",
     href: `${ADMIN_BASE_PATH}/blog`,
     icon: Newspaper,
+  },
+  {
+    label: "Leaders",
+    href: `${ADMIN_BASE_PATH}/leaders`,
+    icon: UserCircle,
+  },
+  {
+    label: "Gallery",
+    href: `${ADMIN_BASE_PATH}/gallery`,
+    icon: Images,
+  },
+  {
+    label: "Sermons",
+    href: `${ADMIN_BASE_PATH}/sermons`,
+    icon: Mic,
+  },
+  {
+    label: "Testimonials",
+    href: `${ADMIN_BASE_PATH}/testimonials`,
+    icon: Quote,
+  },
+  {
+    label: "FAQ",
+    href: `${ADMIN_BASE_PATH}/faq`,
+    icon: HelpCircle,
+  },
+  {
+    label: "Announcements",
+    href: `${ADMIN_BASE_PATH}/announcements`,
+    icon: Bell,
+  },
+  {
+    label: "Newsletter",
+    href: `${ADMIN_BASE_PATH}/newsletter`,
+    icon: Mail,
+  },
+  {
+    label: "Volunteers",
+    href: `${ADMIN_BASE_PATH}/volunteers`,
+    icon: HandHeart,
   },
   {
     label: "Ministries",

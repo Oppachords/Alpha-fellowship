@@ -4,6 +4,7 @@ const publicRoutes = [
   "",
   "/about",
   "/services",
+  "/programs",
   "/contact",
   "/give",
   "/members",
@@ -13,6 +14,11 @@ const publicRoutes = [
   "/watch-live",
   "/sermons",
   "/blog",
+  "/gallery",
+  "/get-involved",
+  "/get-involved/volunteer",
+  "/faq",
+  "/prayer-request",
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {
