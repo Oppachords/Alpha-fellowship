@@ -143,12 +143,14 @@ async function main() {
     where: { id: "leader-john-mukisa" },
     update: {
       isPublished: true,
+      photoUrl: "/images/leaders/br-mukisa-john-jackson.png",
     },
     create: {
       id: "leader-john-mukisa",
       name: "BR Mukisa John Jackson",
       position: "Church Leadership",
       bio: "Brother John Mukisa was Guild president at a great university in Kampala and was a person that loved leadership, so was his mind until God called him to ministry. He saw a number of young people at the University and he was touched to help the lives of the young people.",
+      photoUrl: "/images/leaders/br-mukisa-john-jackson.png",
       isPublished: true,
       sortOrder: 0,
     },

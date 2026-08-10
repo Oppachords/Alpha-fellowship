@@ -11,6 +11,17 @@ import {
 } from "@/lib/content/format-service";
 import { db } from "@/lib/db";
 
+const leaderPhotoFallbacks: Record<string, string> = {
+  "leader-john-mukisa": "/images/leaders/br-mukisa-john-jackson.png",
+};
+
+function resolveLeaderPhoto(id: string, name: string, photoUrl: string | null | undefined) {
+  if (photoUrl) return photoUrl;
+  if (leaderPhotoFallbacks[id]) return leaderPhotoFallbacks[id];
+  if (name.includes("Mukisa")) return "/images/leaders/br-mukisa-john-jackson.png";
+  return null;
+}
+
 export async function getPublicServices(): Promise<{
   services: PublicService[];
   fromDatabase: boolean;
@@ -161,6 +172,7 @@ export async function getPublicLeaders(): Promise<{
           name: row.name,
           position: row.position,
           bio: row.bio,
+          photoUrl: resolveLeaderPhoto(row.id, row.name, row.photoUrl),
         })),
       };
     }
@@ -175,6 +187,7 @@ export async function getPublicLeaders(): Promise<{
       name: leader.name,
       position: leader.position,
       bio: leader.bio,
+      photoUrl: leader.photoUrl ?? null,
     })),
   };
 }

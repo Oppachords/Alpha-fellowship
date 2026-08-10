@@ -53,6 +53,7 @@ export type PublicLeader = {
   name: string;
   position: string;
   bio: string | null;
+  photoUrl?: string | null;
 };
 
 export type PublicMinistry = {

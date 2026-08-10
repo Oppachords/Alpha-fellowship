@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { PageHero } from "@/components/public/page-hero";
 import { EliteFoundationSection } from "@/components/public/sections/elite-foundation-section";
@@ -74,13 +75,30 @@ export default async function AboutPage() {
             {leaders.map((leader) => (
               <div
                 key={leader.id}
-                className="rounded-2xl border border-border bg-white p-7 text-center"
+                className="rounded-2xl border border-border bg-white overflow-hidden text-center"
               >
-                <h3 className="type-subheading mb-1">{leader.name}</h3>
-                <p className="type-label mb-4">{leader.position}</p>
-                {leader.bio && (
-                  <p className="type-body-sm text-muted-foreground">{leader.bio}</p>
+                {leader.photoUrl ? (
+                  <div className="relative aspect-[4/5] w-full bg-muted">
+                    <Image
+                      src={leader.photoUrl}
+                      alt={leader.name}
+                      fill
+                      className="object-cover object-top"
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                    />
+                  </div>
+                ) : (
+                  <div className="flex aspect-[4/5] w-full items-center justify-center bg-cream text-sm text-muted-foreground">
+                    Photo coming soon
+                  </div>
                 )}
+                <div className="p-7">
+                  <h3 className="type-subheading mb-1">{leader.name}</h3>
+                  <p className="type-label mb-4">{leader.position}</p>
+                  {leader.bio && (
+                    <p className="type-body-sm text-muted-foreground">{leader.bio}</p>
+                  )}
+                </div>
               </div>
             ))}
           </div>
