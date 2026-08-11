@@ -4,10 +4,8 @@ import Link from "next/link";
 import { AnimatedSection } from "@/components/public/animated-section";
 import { LeadershipProfileCard } from "@/components/public/leadership-profile-card";
 import { PageHero } from "@/components/public/page-hero";
-import { EliteFoundationSection } from "@/components/public/sections/elite-foundation-section";
 import { churchContent } from "@/lib/content/church-content";
 import {
-  getEliteFoundationMinistry,
   getPublicChurchProfile,
   getPublicLeaders,
   getPublicServiceTeam,
@@ -21,12 +19,11 @@ export const metadata: Metadata = {
 };
 
 export default async function AboutPage() {
-  const [profile, { leaders }, { members: serviceTeam }, eliteFoundation, { testimonials }] =
+  const [profile, { leaders }, { members: serviceTeam }, { testimonials }] =
     await Promise.all([
       getPublicChurchProfile(),
       getPublicLeaders(),
       getPublicServiceTeam(),
-      getEliteFoundationMinistry(),
       getPublicTestimonials(),
     ]);
 
@@ -152,14 +149,6 @@ export default async function AboutPage() {
             </div>
           </div>
         </section>
-      )}
-
-      {eliteFoundation && (
-        <EliteFoundationSection
-          name={eliteFoundation.name}
-          schedule={eliteFoundation.schedule}
-          description={eliteFoundation.description}
-        />
       )}
 
       <section className="section-padding bg-primary text-white text-center">

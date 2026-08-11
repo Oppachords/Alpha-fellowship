@@ -22,11 +22,18 @@ export const headerOverflowNavLinks: PublicNavLink[] = [
   { label: "Members", href: "/members" },
 ];
 
-/** All links for mobile menu and footer */
+/** All links for mobile menu */
 export const primaryNavLinks: PublicNavLink[] = [
   ...headerNavLinks,
   ...headerOverflowNavLinks,
 ];
+
+export function isPublicNavLinkActive(pathname: string, href: string) {
+  if (href === "/") {
+    return pathname === "/";
+  }
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
 
 /** Secondary links for the footer */
 export const footerNavLinks: PublicNavLink[] = [
