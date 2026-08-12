@@ -9,15 +9,23 @@ export type YouTubeVideo = {
   isLive?: boolean;
 };
 
+export type YouTubeHealth = {
+  configured: boolean;
+  channelId: string | null;
+  videoCount: number;
+  error: string | null;
+};
+
 const DEFAULT_HANDLE = "alphabfellowship";
+const KNOWN_CHANNEL_ID = "UCFQ3S1UouA2OPlPZLISnbXA";
 const MAX_VIDEOS = 50;
 
 function getApiKey() {
-  return process.env.YOUTUBE_API_KEY ?? null;
+  return process.env.YOUTUBE_API_KEY?.trim() || null;
 }
 
 function getChannelIdFromEnv() {
-  return process.env.YOUTUBE_CHANNEL_ID ?? null;
+  return process.env.YOUTUBE_CHANNEL_ID?.trim() || null;
 }
 
 function extractHandleFromUrl(url: string) {
@@ -25,9 +33,34 @@ function extractHandleFromUrl(url: string) {
   return match?.[1] ?? null;
 }
 
-async function youtubeFetch<T>(path: string, revalidate: number): Promise<T | null> {
+function parseChannelEnvValue(raw: string) {
+  const handleFromUrl = extractHandleFromUrl(raw);
+  if (handleFromUrl) return { handle: handleFromUrl };
+
+  if (raw.startsWith("@")) {
+    return { handle: raw.slice(1) };
+  }
+
+  if (/^UC[\w-]{22}$/.test(raw)) {
+    return { channelId: raw };
+  }
+
+  if (!raw.includes("/") && !raw.startsWith("UC")) {
+    return { handle: raw };
+  }
+
+  return { channelId: raw };
+}
+
+type YouTubeFetchResult<T> =
+  | { ok: true; data: T }
+  | { ok: false; status: number; message: string };
+
+async function youtubeFetch<T>(path: string, revalidate: number): Promise<YouTubeFetchResult<T>> {
   const apiKey = getApiKey();
-  if (!apiKey) return null;
+  if (!apiKey) {
+    return { ok: false, status: 0, message: "YOUTUBE_API_KEY is not set" };
+  }
 
   const separator = path.includes("?") ? "&" : "?";
   const url = `https://www.googleapis.com/youtube/v3${path}${separator}key=${apiKey}`;
@@ -35,24 +68,58 @@ async function youtubeFetch<T>(path: string, revalidate: number): Promise<T | nu
   try {
     const response = await fetch(url, { next: { revalidate } });
     if (!response.ok) {
-      if (process.env.NODE_ENV === "development") {
-        const body = await response.text();
-        console.error("[YouTube API]", response.status, body.slice(0, 200));
+      let message = `YouTube API returned ${response.status}`;
+      try {
+        const body = (await response.json()) as {
+          error?: { message?: string; errors?: { reason?: string }[] };
+        };
+        const apiMessage = body.error?.message;
+        const reason = body.error?.errors?.[0]?.reason;
+        if (apiMessage) message = apiMessage;
+        if (response.status === 403 && reason === "accessNotConfigured") {
+          message =
+            "YouTube Data API v3 is not enabled for this Google Cloud project.";
+        }
+        if (response.status === 403 && /referer|ip|API key/i.test(message)) {
+          message +=
+            " Server-side requests need an unrestricted API key (or IP restriction), not HTTP referrer restriction.";
+        }
+      } catch {
+        // Keep generic message when response body is not JSON.
       }
-      return null;
+
+      console.error("[YouTube API]", path, message);
+      return { ok: false, status: response.status, message };
     }
-    return (await response.json()) as T;
+
+    return { ok: true, data: (await response.json()) as T };
   } catch (error) {
-    if (process.env.NODE_ENV === "development") {
-      console.error("[YouTube API] fetch failed", error);
-    }
-    return null;
+    const message = error instanceof Error ? error.message : "Network request failed";
+    console.error("[YouTube API] fetch failed", path, message);
+    return { ok: false, status: 0, message };
   }
+}
+
+async function resolveChannelIdByHandle(handle: string): Promise<string | null> {
+  const data = await youtubeFetch<{ items?: { id: string }[] }>(
+    `/channels?part=id&forHandle=${encodeURIComponent(handle)}`,
+    86400
+  );
+
+  if (!data.ok) return null;
+  return data.data.items?.[0]?.id ?? null;
 }
 
 async function resolveChannelId(): Promise<string | null> {
   const fromEnv = getChannelIdFromEnv();
-  if (fromEnv) return fromEnv;
+  if (fromEnv) {
+    const parsed = parseChannelEnvValue(fromEnv);
+    if (parsed.channelId) return parsed.channelId;
+    if (parsed.handle) {
+      const channelId = await resolveChannelIdByHandle(parsed.handle);
+      if (channelId) return channelId;
+    }
+  }
 
   const handles = [
     extractHandleFromUrl(churchContent.social.youtube),
@@ -60,15 +127,11 @@ async function resolveChannelId(): Promise<string | null> {
   ].filter((value, index, array): value is string => Boolean(value) && array.indexOf(value) === index);
 
   for (const handle of handles) {
-    const data = await youtubeFetch<{ items?: { id: string }[] }>(
-      `/channels?part=id&forHandle=${handle}`,
-      86400
-    );
-    const channelId = data?.items?.[0]?.id;
+    const channelId = await resolveChannelIdByHandle(handle);
     if (channelId) return channelId;
   }
 
-  return null;
+  return KNOWN_CHANNEL_ID;
 }
 
 async function getUploadsPlaylistId(channelId: string) {
@@ -78,7 +141,8 @@ async function getUploadsPlaylistId(channelId: string) {
     }[];
   }>(`/channels?part=contentDetails&id=${channelId}`, 86400);
 
-  return data?.items?.[0]?.contentDetails?.relatedPlaylists?.uploads ?? null;
+  if (!data.ok) return null;
+  return data.data.items?.[0]?.contentDetails?.relatedPlaylists?.uploads ?? null;
 }
 
 type PlaylistItemsResponse = {
@@ -167,8 +231,10 @@ export async function fetchRecentVideos(limit = MAX_VIDEOS): Promise<YouTubeVide
       1800
     );
 
-    const fromPlaylist = (data?.items ?? []).map(mapPlaylistItem);
-    if (fromPlaylist.length > 0) return fromPlaylist;
+    if (data.ok) {
+      const fromPlaylist = (data.data.items ?? []).map(mapPlaylistItem);
+      if (fromPlaylist.length > 0) return fromPlaylist;
+    }
   }
 
   const data = await youtubeFetch<SearchResponse>(
@@ -176,7 +242,8 @@ export async function fetchRecentVideos(limit = MAX_VIDEOS): Promise<YouTubeVide
     1800
   );
 
-  return (data?.items ?? []).map(mapSearchItem);
+  if (!data.ok) return [];
+  return (data.data.items ?? []).map(mapSearchItem);
 }
 
 export async function fetchLiveStream(): Promise<YouTubeVideo | null> {
@@ -188,7 +255,9 @@ export async function fetchLiveStream(): Promise<YouTubeVideo | null> {
     120
   );
 
-  const item = data?.items?.[0];
+  if (!data.ok) return null;
+
+  const item = data.data.items?.[0];
   if (!item) return null;
 
   return { ...mapSearchItem(item), isLive: true };
@@ -218,6 +287,73 @@ export async function fetchPreviousStreams(limit = 8): Promise<YouTubeVideo[]> {
   if (!featured) return videos.slice(0, limit);
 
   return videos.filter((video) => video.id !== featured.video.id).slice(0, limit);
+}
+
+export async function getYouTubeHealth(): Promise<YouTubeHealth> {
+  const configured = isYouTubeConfigured();
+  if (!configured) {
+    return {
+      configured: false,
+      channelId: null,
+      videoCount: 0,
+      error: "YOUTUBE_API_KEY is not set",
+    };
+  }
+
+  const channelId = await resolveChannelId();
+  if (!channelId) {
+    return {
+      configured: true,
+      channelId: null,
+      videoCount: 0,
+      error: "Could not resolve a YouTube channel ID",
+    };
+  }
+
+  const uploadsPlaylistId = await getUploadsPlaylistId(channelId);
+  if (uploadsPlaylistId) {
+    const playlist = await youtubeFetch<PlaylistItemsResponse>(
+      `/playlistItems?part=snippet&playlistId=${uploadsPlaylistId}&maxResults=1`,
+      0
+    );
+
+    if (playlist.ok) {
+      return {
+        configured: true,
+        channelId,
+        videoCount: playlist.data.items?.length ?? 0,
+        error: null,
+      };
+    }
+
+    return {
+      configured: true,
+      channelId,
+      videoCount: 0,
+      error: playlist.message,
+    };
+  }
+
+  const search = await youtubeFetch<SearchResponse>(
+    `/search?part=snippet&channelId=${channelId}&order=date&type=video&maxResults=1`,
+    0
+  );
+
+  if (!search.ok) {
+    return {
+      configured: true,
+      channelId,
+      videoCount: 0,
+      error: search.message,
+    };
+  }
+
+  return {
+    configured: true,
+    channelId,
+    videoCount: search.data.items?.length ?? 0,
+    error: null,
+  };
 }
 
 export function getYouTubeChannelUrl() {
