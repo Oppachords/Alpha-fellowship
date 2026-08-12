@@ -10,6 +10,7 @@ export type YouTubeVideo = {
 };
 
 const DEFAULT_HANDLE = "alphabfellowship";
+const MAX_VIDEOS = 50;
 
 function getApiKey() {
   return process.env.YOUTUBE_API_KEY ?? null;
@@ -17,6 +18,11 @@ function getApiKey() {
 
 function getChannelIdFromEnv() {
   return process.env.YOUTUBE_CHANNEL_ID ?? null;
+}
+
+function extractHandleFromUrl(url: string) {
+  const match = url.match(/youtube\.com\/@([a-zA-Z0-9._-]+)/i);
+  return match?.[1] ?? null;
 }
 
 async function youtubeFetch<T>(path: string, revalidate: number): Promise<T | null> {
@@ -28,9 +34,18 @@ async function youtubeFetch<T>(path: string, revalidate: number): Promise<T | nu
 
   try {
     const response = await fetch(url, { next: { revalidate } });
-    if (!response.ok) return null;
+    if (!response.ok) {
+      if (process.env.NODE_ENV === "development") {
+        const body = await response.text();
+        console.error("[YouTube API]", response.status, body.slice(0, 200));
+      }
+      return null;
+    }
     return (await response.json()) as T;
-  } catch {
+  } catch (error) {
+    if (process.env.NODE_ENV === "development") {
+      console.error("[YouTube API] fetch failed", error);
+    }
     return null;
   }
 }
@@ -39,14 +54,45 @@ async function resolveChannelId(): Promise<string | null> {
   const fromEnv = getChannelIdFromEnv();
   if (fromEnv) return fromEnv;
 
-  const handle = DEFAULT_HANDLE;
-  const data = await youtubeFetch<{ items?: { id: string }[] }>(
-    `/channels?part=id&forHandle=${handle}`,
-    86400
-  );
+  const handles = [
+    extractHandleFromUrl(churchContent.social.youtube),
+    DEFAULT_HANDLE,
+  ].filter((value, index, array): value is string => Boolean(value) && array.indexOf(value) === index);
 
-  return data?.items?.[0]?.id ?? null;
+  for (const handle of handles) {
+    const data = await youtubeFetch<{ items?: { id: string }[] }>(
+      `/channels?part=id&forHandle=${handle}`,
+      86400
+    );
+    const channelId = data?.items?.[0]?.id;
+    if (channelId) return channelId;
+  }
+
+  return null;
 }
+
+async function getUploadsPlaylistId(channelId: string) {
+  const data = await youtubeFetch<{
+    items?: {
+      contentDetails?: { relatedPlaylists?: { uploads?: string } };
+    }[];
+  }>(`/channels?part=contentDetails&id=${channelId}`, 86400);
+
+  return data?.items?.[0]?.contentDetails?.relatedPlaylists?.uploads ?? null;
+}
+
+type PlaylistItemsResponse = {
+  items?: {
+    snippet: {
+      title: string;
+      description: string;
+      publishedAt: string;
+      thumbnails: { high?: { url: string }; medium?: { url: string } };
+      resourceId: { videoId: string };
+      liveBroadcastContent?: string;
+    };
+  }[];
+};
 
 type SearchResponse = {
   items?: {
@@ -61,7 +107,22 @@ type SearchResponse = {
   }[];
 };
 
-function mapVideo(item: NonNullable<SearchResponse["items"]>[number]): YouTubeVideo {
+function mapPlaylistItem(item: NonNullable<PlaylistItemsResponse["items"]>[number]): YouTubeVideo {
+  const videoId = item.snippet.resourceId.videoId;
+  return {
+    id: videoId,
+    title: item.snippet.title,
+    description: item.snippet.description,
+    thumbnailUrl:
+      item.snippet.thumbnails.high?.url ??
+      item.snippet.thumbnails.medium?.url ??
+      `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
+    publishedAt: item.snippet.publishedAt,
+    isLive: item.snippet.liveBroadcastContent === "live",
+  };
+}
+
+function mapSearchItem(item: NonNullable<SearchResponse["items"]>[number]): YouTubeVideo {
   return {
     id: item.id.videoId,
     title: item.snippet.title,
@@ -69,7 +130,7 @@ function mapVideo(item: NonNullable<SearchResponse["items"]>[number]): YouTubeVi
     thumbnailUrl:
       item.snippet.thumbnails.high?.url ??
       item.snippet.thumbnails.medium?.url ??
-      "",
+      `https://i.ytimg.com/vi/${item.id.videoId}/hqdefault.jpg`,
     publishedAt: item.snippet.publishedAt,
     isLive: item.snippet.liveBroadcastContent === "live",
   };
@@ -77,6 +138,45 @@ function mapVideo(item: NonNullable<SearchResponse["items"]>[number]): YouTubeVi
 
 export function isYouTubeConfigured() {
   return Boolean(getApiKey());
+}
+
+export function mergeSermonVideos(...sources: YouTubeVideo[][]) {
+  const map = new Map<string, YouTubeVideo>();
+
+  for (const source of sources) {
+    for (const video of source) {
+      if (!video.id) continue;
+      map.set(video.id, { ...map.get(video.id), ...video });
+    }
+  }
+
+  return Array.from(map.values()).sort(
+    (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+  );
+}
+
+export async function fetchRecentVideos(limit = MAX_VIDEOS): Promise<YouTubeVideo[]> {
+  const channelId = await resolveChannelId();
+  if (!channelId) return [];
+
+  const uploadsPlaylistId = await getUploadsPlaylistId(channelId);
+  if (uploadsPlaylistId) {
+    const capped = Math.min(limit, 50);
+    const data = await youtubeFetch<PlaylistItemsResponse>(
+      `/playlistItems?part=snippet&playlistId=${uploadsPlaylistId}&maxResults=${capped}`,
+      1800
+    );
+
+    const fromPlaylist = (data?.items ?? []).map(mapPlaylistItem);
+    if (fromPlaylist.length > 0) return fromPlaylist;
+  }
+
+  const data = await youtubeFetch<SearchResponse>(
+    `/search?part=snippet&channelId=${channelId}&order=date&type=video&maxResults=${Math.min(limit, 50)}`,
+    1800
+  );
+
+  return (data?.items ?? []).map(mapSearchItem);
 }
 
 export async function fetchLiveStream(): Promise<YouTubeVideo | null> {
@@ -91,19 +191,7 @@ export async function fetchLiveStream(): Promise<YouTubeVideo | null> {
   const item = data?.items?.[0];
   if (!item) return null;
 
-  return { ...mapVideo(item), isLive: true };
-}
-
-export async function fetchRecentVideos(limit = 12): Promise<YouTubeVideo[]> {
-  const channelId = await resolveChannelId();
-  if (!channelId) return [];
-
-  const data = await youtubeFetch<SearchResponse>(
-    `/search?part=snippet&channelId=${channelId}&order=date&type=video&maxResults=${limit}`,
-    3600
-  );
-
-  return (data?.items ?? []).map(mapVideo);
+  return { ...mapSearchItem(item), isLive: true };
 }
 
 export async function fetchFeaturedPlayback(): Promise<{

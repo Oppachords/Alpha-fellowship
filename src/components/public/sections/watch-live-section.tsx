@@ -1,16 +1,20 @@
 import { Play, Radio } from "lucide-react";
+import Link from "next/link";
 import { AnimatedSection } from "@/components/public/animated-section";
-import { YouTubeIcon } from "@/components/public/brand-icons";
 import { YouTubeEmbed } from "@/components/public/youtube-embed";
 import { ButtonLink } from "@/components/ui/button-link";
-import { churchContent } from "@/lib/content/church-content";
 import {
   fetchFeaturedPlayback,
+  fetchRecentVideos,
   isYouTubeConfigured,
 } from "@/lib/integrations/youtube";
 
 export async function WatchLiveSection() {
-  const featured = isYouTubeConfigured() ? await fetchFeaturedPlayback() : null;
+  const configured = isYouTubeConfigured();
+  const featured = configured ? await fetchFeaturedPlayback() : null;
+  const fallbackRecent =
+    configured && !featured ? (await fetchRecentVideos(1))[0] ?? null : null;
+  const playback = featured ?? (fallbackRecent ? { video: fallbackRecent, mode: "recent" as const } : null);
 
   return (
     <section
@@ -27,8 +31,8 @@ export async function WatchLiveSection() {
               <h2 className="type-heading-lg mb-6">Join Us Online</h2>
               <div className="h-px w-12 bg-white/30 mb-8" />
               <p className="text-white/80 leading-relaxed mb-8 text-lg font-light">
-                Can&apos;t make it in person? Watch our live services and sermons
-                on YouTube. Experience worship, the word of God, and prayer from
+                Can&apos;t make it in person? Watch our live services and recorded
+                messages right here — worship, the word of God, and prayer from
                 wherever you are.
               </p>
               <div className="flex flex-wrap gap-4">
@@ -40,42 +44,46 @@ export async function WatchLiveSection() {
                   Watch Live
                 </ButtonLink>
                 <ButtonLink
-                  href={churchContent.social.youtube}
-                  className="inline-flex items-center justify-center rounded-full px-7 py-3 font-sans text-sm font-bold bg-[#FF0000] text-white hover:bg-[#CC0000] transition-colors"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="/sermons"
+                  variant="outline"
+                  className="rounded-full border-white/40 bg-transparent text-white hover:bg-white/10"
                 >
-                  <YouTubeIcon className="mr-2 h-4 w-4" />
-                  YouTube Channel
+                  All sermons
                 </ButtonLink>
               </div>
             </div>
           </AnimatedSection>
 
           <AnimatedSection delay={0.12}>
-            {featured ? (
+            {playback ? (
               <div className="space-y-4">
-                {featured.mode === "live" && (
+                {playback.mode === "live" ? (
                   <div className="flex items-center gap-2 text-red-400">
                     <Radio className="h-4 w-4 animate-pulse" />
                     <span className="text-sm font-medium uppercase tracking-wide">
                       Live now
                     </span>
                   </div>
-                )}
-                {featured.mode === "recent" && (
-                  <p className="text-sm text-white/70 uppercase tracking-wide">
-                    Most recent message
-                  </p>
+                ) : (
+                  <div>
+                    <p className="text-sm font-medium uppercase tracking-wide text-white/70">
+                      No live stream now
+                    </p>
+                    <p className="text-sm text-white/60">Showing our latest sermon</p>
+                  </div>
                 )}
                 <YouTubeEmbed
-                  videoId={featured.video.id}
-                  title={featured.video.title}
-                  autoplay={featured.mode === "live"}
+                  videoId={playback.video.id}
+                  title={playback.video.title}
+                  autoplay={playback.mode === "live"}
                 />
-                <p className="text-sm text-white/70 line-clamp-2">
-                  {featured.video.title}
-                </p>
+                <p className="text-sm text-white/70 line-clamp-2">{playback.video.title}</p>
+                <Link
+                  href={`/sermons?v=${playback.video.id}`}
+                  className="inline-flex text-sm font-semibold text-white/90 hover:text-white hover:underline"
+                >
+                  Browse all messages
+                </Link>
               </div>
             ) : (
               <div className="relative aspect-video rounded-2xl overflow-hidden bg-white/10 border border-white/20 flex flex-col items-center justify-center">
@@ -83,7 +91,9 @@ export async function WatchLiveSection() {
                   <Play className="h-9 w-9 text-white fill-white ml-1" />
                 </div>
                 <p className="text-white/70 text-sm mb-4 px-6 text-center">
-                  Live stream appears here when available
+                  {configured
+                    ? "Live stream appears here when available"
+                    : "Connect YouTube in Vercel to show live and recorded services"}
                 </p>
                 <ButtonLink
                   variant="link"

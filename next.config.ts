@@ -15,7 +15,7 @@ const securityHeaders = [
       "default-src 'self'",
       "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
       "style-src 'self' 'unsafe-inline'",
-      "img-src 'self' data: blob: https://res.cloudinary.com https://i.ytimg.com https://*.ytimg.com",
+      "img-src 'self' data: blob: https://res.cloudinary.com https://i.ytimg.com https://*.ytimg.com https://img.youtube.com",
       "font-src 'self' data:",
       "connect-src 'self' https://www.googleapis.com",
       "frame-src https://www.youtube.com https://www.youtube-nocookie.com",

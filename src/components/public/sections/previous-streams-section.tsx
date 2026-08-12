@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { AnimatedSection } from "@/components/public/animated-section";
-import { SermonCard } from "@/components/public/sermon-card";
+import { CompactSermonCard } from "@/components/public/sermon-card";
 import {
   fetchPreviousStreams,
   isYouTubeConfigured,
@@ -37,7 +37,9 @@ export async function PreviousStreamsSection() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {videos.map((video, index) => (
             <AnimatedSection key={video.id} delay={index * 0.06}>
-              <SermonCard video={video} />
+              <Link href={`/sermons?v=${video.id}`} className="block">
+                <CompactSermonCard video={video} />
+              </Link>
             </AnimatedSection>
           ))}
         </div>
