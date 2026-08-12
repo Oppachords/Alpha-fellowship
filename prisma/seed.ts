@@ -325,7 +325,7 @@ async function main() {
     { id: "nav-about", label: "About", href: "/about", sortOrder: 1 },
     { id: "nav-ministries", label: "Ministries", href: "/ministries", sortOrder: 2 },
     { id: "nav-events", label: "Events", href: "/events", sortOrder: 3 },
-    { id: "nav-sermons", label: "Sermons", href: "/sermons", sortOrder: 5 },
+    { id: "nav-watch-live", label: "Watch Live", href: "/watch-live", sortOrder: 5 },
     { id: "nav-blog", label: "Blog", href: "/blog", sortOrder: 6 },
     { id: "nav-involved", label: "Get Involved", href: "/get-involved", sortOrder: 7 },
     { id: "nav-contact", label: "Contact", href: "/contact", sortOrder: 8 },

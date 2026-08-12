@@ -180,7 +180,7 @@ export const navigation = {
     { label: "About", href: "/about" },
     { label: "Ministries", href: "/ministries" },
     { label: "Events", href: "/events" },
-    { label: "Sermons", href: "/sermons" },
+    { label: "Watch Live", href: "/watch-live" },
     { label: "Blog", href: "/blog" },
     { label: "Get Involved", href: "/get-involved" },
     { label: "Contact", href: "/contact" },

@@ -43,6 +43,11 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       {
+        source: "/sermons",
+        destination: "/watch-live",
+        permanent: true,
+      },
+      {
         source: "/church/admin/programs",
         destination: "/church/admin/ministries",
         permanent: true,

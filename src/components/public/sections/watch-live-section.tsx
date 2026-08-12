@@ -1,7 +1,7 @@
 import { Play, Radio } from "lucide-react";
 import Link from "next/link";
 import { AnimatedSection } from "@/components/public/animated-section";
-import { YouTubeEmbed } from "@/components/public/youtube-embed";
+import { VideoTheater } from "@/components/public/video-theater";
 import { ButtonLink } from "@/components/ui/button-link";
 import {
   fetchFeaturedPlayback,
@@ -35,22 +35,13 @@ export async function WatchLiveSection() {
                 messages right here — worship, the word of God, and prayer from
                 wherever you are.
               </p>
-              <div className="flex flex-wrap gap-4">
-                <ButtonLink
-                  href="/watch-live"
-                  className="rounded-full bg-primary hover:bg-primary/90 text-white"
-                >
-                  <Play className="mr-2 h-4 w-4 fill-current" />
-                  Watch Live
-                </ButtonLink>
-                <ButtonLink
-                  href="/sermons"
-                  variant="outline"
-                  className="rounded-full border-white/40 bg-transparent text-white hover:bg-white/10"
-                >
-                  All sermons
-                </ButtonLink>
-              </div>
+              <ButtonLink
+                href="/watch-live"
+                className="rounded-full bg-primary hover:bg-primary/90 text-white"
+              >
+                <Play className="mr-2 h-4 w-4 fill-current" />
+                Watch Live &amp; Sermons
+              </ButtonLink>
             </div>
           </AnimatedSection>
 
@@ -72,14 +63,13 @@ export async function WatchLiveSection() {
                     <p className="text-sm text-white/60">Showing our latest sermon</p>
                   </div>
                 )}
-                <YouTubeEmbed
-                  videoId={playback.video.id}
-                  title={playback.video.title}
+                <VideoTheater
+                  video={playback.video}
                   autoplay={playback.mode === "live"}
+                  showDetails={false}
                 />
-                <p className="text-sm text-white/70 line-clamp-2">{playback.video.title}</p>
                 <Link
-                  href={`/sermons?v=${playback.video.id}`}
+                  href={`/watch-live?v=${playback.video.id}`}
                   className="inline-flex text-sm font-semibold text-white/90 hover:text-white hover:underline"
                 >
                   Browse all messages
@@ -95,10 +85,10 @@ export async function WatchLiveSection() {
                 </p>
                 <ButtonLink
                   variant="link"
-                  href="/sermons"
+                  href="/watch-live"
                   className="text-white hover:text-white/80"
                 >
-                  Browse Sermons
+                  Watch Live &amp; Sermons
                 </ButtonLink>
               </div>
             )}

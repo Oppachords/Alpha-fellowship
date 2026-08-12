@@ -11,7 +11,6 @@ const publicRoutes = [
   "/ministries",
   "/campaigns",
   "/watch-live",
-  "/sermons",
   "/blog",
   "/gallery",
   "/get-involved",

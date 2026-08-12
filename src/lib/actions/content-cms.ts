@@ -337,7 +337,7 @@ export async function createSermonAction(_prev: ActionState, formData: FormData)
       details: { title },
     });
 
-    revalidateContent(["/sermons", `${ADMIN_BASE_PATH}/sermons`]);
+    revalidateContent(["/watch-live", `${ADMIN_BASE_PATH}/sermons`]);
     return { success: true };
   } catch {
     return { error: "Failed to create sermon." };
@@ -385,7 +385,7 @@ export async function updateSermonAction(_prev: ActionState, formData: FormData)
       details: { title },
     });
 
-    revalidateContent(["/sermons", `${ADMIN_BASE_PATH}/sermons`]);
+    revalidateContent(["/watch-live", `${ADMIN_BASE_PATH}/sermons`]);
     return { success: true };
   } catch {
     return { error: "Failed to update sermon." };
@@ -407,7 +407,7 @@ export async function deleteSermonAction(_prev: ActionState, formData: FormData)
       resource: "sermon",
       resourceId: id,
     });
-    revalidateContent(["/sermons", `${ADMIN_BASE_PATH}/sermons`]);
+    revalidateContent(["/watch-live", `${ADMIN_BASE_PATH}/sermons`]);
     return { success: true };
   } catch {
     return { error: "Failed to delete sermon." };

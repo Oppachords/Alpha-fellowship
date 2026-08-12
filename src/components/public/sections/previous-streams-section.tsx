@@ -22,10 +22,10 @@ export async function PreviousStreamsSection() {
               <h2 className="type-heading">Previously streamed</h2>
             </div>
             <Link
-              href="/sermons"
+              href="/watch-live"
               className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
             >
-              View all recordings
+              View all messages
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
@@ -34,7 +34,7 @@ export async function PreviousStreamsSection() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {videos.map((video, index) => (
             <AnimatedSection key={video.id} delay={index * 0.06}>
-              <Link href={`/sermons?v=${video.id}`} className="block">
+              <Link href={`/watch-live?v=${video.id}`} className="block">
                 <CompactSermonCard video={video} />
               </Link>
             </AnimatedSection>
