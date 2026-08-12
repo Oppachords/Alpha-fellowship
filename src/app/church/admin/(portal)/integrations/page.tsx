@@ -63,51 +63,55 @@ export default async function AdminIntegrationsPage() {
                 <div className="space-y-3">
                   <div
                     className={`rounded-xl border px-4 py-3 text-sm ${
-                      youtubeHealth.error
+                      youtubeHealth.videoCount === 0
                         ? "border-amber-200 bg-amber-50 text-amber-950"
-                        : "border-emerald-200 bg-emerald-50 text-emerald-950"
+                        : youtubeHealth.source === "rss" && youtubeHealth.error
+                          ? "border-sky-200 bg-sky-50 text-sky-950"
+                          : "border-emerald-200 bg-emerald-50 text-emerald-950"
                     }`}
                   >
                     <div className="flex items-start gap-2">
-                      {youtubeHealth.error ? (
+                      {youtubeHealth.videoCount === 0 ? (
                         <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
                       ) : (
                         <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
                       )}
                       <div>
-                        {youtubeHealth.error ? (
+                        {youtubeHealth.videoCount === 0 ? (
                           <>
-                            <p className="font-medium">YouTube connection failed</p>
-                            <p className="mt-1 text-xs opacity-90">{youtubeHealth.error}</p>
+                            <p className="font-medium">YouTube sync unavailable</p>
+                            <p className="mt-1 text-xs opacity-90">
+                              {youtubeHealth.error ??
+                                "Could not load videos from the YouTube channel."}
+                            </p>
                           </>
                         ) : (
                           <>
-                            <p className="font-medium">YouTube connection OK</p>
+                            <p className="font-medium">
+                              {youtubeHealth.source === "rss"
+                                ? "Sermons auto-syncing from YouTube"
+                                : "YouTube connection OK"}
+                            </p>
                             <p className="mt-1 text-xs opacity-90">
                               Channel{" "}
                               <code className="rounded bg-white/70 px-1 py-0.5">
                                 {youtubeHealth.channelId}
                               </code>
-                              {youtubeHealth.videoCount > 0
-                                ? " — videos reachable"
-                                : " — connected, but no public videos returned yet"}
+                              {" — "}
+                              {youtubeHealth.source === "rss"
+                                ? "using public RSS feed (no manual CMS entries needed)"
+                                : "videos reachable via YouTube Data API"}
                             </p>
+                            {youtubeHealth.error && (
+                              <p className="mt-2 text-xs opacity-90">{youtubeHealth.error}</p>
+                            )}
                           </>
                         )}
                       </div>
                     </div>
                   </div>
 
-                  {!youtubeHealth.error && (
-                    <p className="text-xs text-muted-foreground">
-                      Use the channel ID above in Vercel as{" "}
-                      <code className="rounded bg-muted px-1 py-0.5">YOUTUBE_CHANNEL_ID</code>.
-                      Handles like <code className="rounded bg-muted px-1 py-0.5">@alphabfellowship</code>{" "}
-                      also work now.
-                    </p>
-                  )}
-
-                  {youtubeHealth.error && (
+                  {youtubeHealth.videoCount === 0 && (
                     <ul className="text-xs text-muted-foreground space-y-1 list-disc pl-5">
                       <li>
                         Enable <strong>YouTube Data API v3</strong> in Google Cloud Console.

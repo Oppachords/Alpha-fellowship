@@ -6,15 +6,15 @@ import { ButtonLink } from "@/components/ui/button-link";
 import {
   fetchFeaturedPlayback,
   fetchRecentVideos,
-  isYouTubeConfigured,
 } from "@/lib/integrations/youtube";
 
 export async function WatchLiveSection() {
-  const configured = isYouTubeConfigured();
-  const featured = configured ? await fetchFeaturedPlayback() : null;
-  const fallbackRecent =
-    configured && !featured ? (await fetchRecentVideos(1))[0] ?? null : null;
-  const playback = featured ?? (fallbackRecent ? { video: fallbackRecent, mode: "recent" as const } : null);
+  const [featured, fallbackRecent] = await Promise.all([
+    fetchFeaturedPlayback(),
+    fetchRecentVideos(1).then((videos) => videos[0] ?? null),
+  ]);
+  const playback =
+    featured ?? (fallbackRecent ? { video: fallbackRecent, mode: "recent" as const } : null);
 
   return (
     <section
@@ -91,9 +91,7 @@ export async function WatchLiveSection() {
                   <Play className="h-9 w-9 text-white fill-white ml-1" />
                 </div>
                 <p className="text-white/70 text-sm mb-4 px-6 text-center">
-                  {configured
-                    ? "Live stream appears here when available"
-                    : "Connect YouTube in Vercel to show live and recorded services"}
+                  Live stream appears here when available
                 </p>
                 <ButtonLink
                   variant="link"

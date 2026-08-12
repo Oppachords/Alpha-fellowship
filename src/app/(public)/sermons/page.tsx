@@ -7,7 +7,6 @@ import {
   fetchFeaturedPlayback,
   fetchRecentVideos,
   getYouTubeChannelUrl,
-  isYouTubeConfigured,
   mergeSermonVideos,
   type YouTubeVideo,
 } from "@/lib/integrations/youtube";
@@ -48,11 +47,10 @@ export default async function SermonsPage({
   searchParams: Promise<{ v?: string }>;
 }) {
   const { v: videoFromQuery } = await searchParams;
-  const configured = isYouTubeConfigured();
   const [dbSermons, youtubeVideos, featured] = await Promise.all([
     getDbSermons(),
-    configured ? fetchRecentVideos(50) : Promise.resolve([]),
-    configured ? fetchFeaturedPlayback() : Promise.resolve(null),
+    fetchRecentVideos(50),
+    fetchFeaturedPlayback(),
   ]);
 
   const videos = mergeSermonVideos(youtubeVideos, dbSermons);
@@ -78,9 +76,8 @@ export default async function SermonsPage({
             <div className="rounded-2xl border border-border bg-white p-10 md:p-14 text-center">
               <p className="type-subheading mb-3">Sermons coming soon</p>
               <p className="type-body-sm mx-auto mb-4 max-w-md text-muted-foreground">
-                {configured
-                  ? "We could not load videos from YouTube yet. Confirm YOUTUBE_API_KEY and YOUTUBE_CHANNEL_ID are set on Vercel, then redeploy."
-                  : "Add YOUTUBE_API_KEY (and optionally YOUTUBE_CHANNEL_ID) in Vercel environment variables, then redeploy."}
+                We&apos;re syncing messages from our YouTube channel. Check back shortly,
+                or visit the channel directly below.
               </p>
               <ButtonLink href={getYouTubeChannelUrl()} target="_blank" rel="noopener noreferrer">
                 Visit YouTube channel

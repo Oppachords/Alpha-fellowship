@@ -13,6 +13,7 @@ export type YouTubeHealth = {
   configured: boolean;
   channelId: string | null;
   videoCount: number;
+  source: "api" | "rss" | null;
   error: string | null;
 };
 
@@ -204,25 +205,84 @@ export function isYouTubeConfigured() {
   return Boolean(getApiKey());
 }
 
-export function mergeSermonVideos(...sources: YouTubeVideo[][]) {
-  const map = new Map<string, YouTubeVideo>();
-
-  for (const source of sources) {
-    for (const video of source) {
-      if (!video.id) continue;
-      map.set(video.id, { ...map.get(video.id), ...video });
-    }
-  }
-
-  return Array.from(map.values()).sort(
-    (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
-  );
+export function isYouTubeAutoSyncAvailable() {
+  return Boolean(getChannelIdFromEnv() || KNOWN_CHANNEL_ID);
 }
 
-export async function fetchRecentVideos(limit = MAX_VIDEOS): Promise<YouTubeVideo[]> {
-  const channelId = await resolveChannelId();
-  if (!channelId) return [];
+function decodeXmlText(value: string) {
+  return value
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'");
+}
 
+function parseYouTubeRss(xml: string, limit: number): YouTubeVideo[] {
+  const videos: YouTubeVideo[] = [];
+
+  for (const entry of xml.split("<entry>").slice(1)) {
+    if (videos.length >= limit) break;
+
+    const videoId = entry.match(/<yt:videoId>([^<]+)<\/yt:videoId>/)?.[1]?.trim();
+    if (!videoId) continue;
+
+    const title =
+      decodeXmlText(
+        entry.match(/<media:title>([^<]*)<\/media:title>/)?.[1] ??
+          entry.match(/<title>([^<]*)<\/title>/)?.[1] ??
+          "Untitled message"
+      ).trim() || "Untitled message";
+
+    const publishedAt =
+      entry.match(/<published>([^<]+)<\/published>/)?.[1]?.trim() ??
+      new Date().toISOString();
+
+    const thumbnailUrl =
+      entry.match(/<media:thumbnail url="([^"]+)"/)?.[1] ??
+      `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+
+    const description = decodeXmlText(
+      entry.match(/<media:description>([\s\S]*?)<\/media:description>/)?.[1] ?? ""
+    ).trim();
+
+    videos.push({
+      id: videoId,
+      title,
+      description,
+      thumbnailUrl,
+      publishedAt,
+    });
+  }
+
+  return videos;
+}
+
+async function fetchRecentVideosFromRss(
+  channelId: string,
+  limit: number
+): Promise<YouTubeVideo[]> {
+  const url = `https://www.youtube.com/feeds/videos.xml?channel_id=${encodeURIComponent(channelId)}`;
+
+  try {
+    const response = await fetch(url, { next: { revalidate: 1800 } });
+    if (!response.ok) {
+      console.error("[YouTube RSS]", response.status, channelId);
+      return [];
+    }
+
+    const xml = await response.text();
+    return parseYouTubeRss(xml, limit);
+  } catch (error) {
+    console.error("[YouTube RSS] fetch failed", error);
+    return [];
+  }
+}
+
+async function fetchRecentVideosFromApi(
+  channelId: string,
+  limit: number
+): Promise<YouTubeVideo[]> {
   const uploadsPlaylistId = await getUploadsPlaylistId(channelId);
   if (uploadsPlaylistId) {
     const capped = Math.min(limit, 50);
@@ -244,6 +304,32 @@ export async function fetchRecentVideos(limit = MAX_VIDEOS): Promise<YouTubeVide
 
   if (!data.ok) return [];
   return (data.data.items ?? []).map(mapSearchItem);
+}
+
+export function mergeSermonVideos(...sources: YouTubeVideo[][]) {
+  const map = new Map<string, YouTubeVideo>();
+
+  for (const source of sources) {
+    for (const video of source) {
+      if (!video.id) continue;
+      map.set(video.id, { ...map.get(video.id), ...video });
+    }
+  }
+
+  return Array.from(map.values()).sort(
+    (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+  );
+}
+
+export async function fetchRecentVideos(limit = MAX_VIDEOS): Promise<YouTubeVideo[]> {
+  const channelId = (await resolveChannelId()) ?? KNOWN_CHANNEL_ID;
+
+  if (getApiKey()) {
+    const fromApi = await fetchRecentVideosFromApi(channelId, limit);
+    if (fromApi.length > 0) return fromApi;
+  }
+
+  return fetchRecentVideosFromRss(channelId, limit);
 }
 
 export async function fetchLiveStream(): Promise<YouTubeVideo | null> {
@@ -291,68 +377,42 @@ export async function fetchPreviousStreams(limit = 8): Promise<YouTubeVideo[]> {
 
 export async function getYouTubeHealth(): Promise<YouTubeHealth> {
   const configured = isYouTubeConfigured();
-  if (!configured) {
-    return {
-      configured: false,
-      channelId: null,
-      videoCount: 0,
-      error: "YOUTUBE_API_KEY is not set",
-    };
-  }
+  const channelId = (await resolveChannelId()) ?? KNOWN_CHANNEL_ID;
 
-  const channelId = await resolveChannelId();
-  if (!channelId) {
-    return {
-      configured: true,
-      channelId: null,
-      videoCount: 0,
-      error: "Could not resolve a YouTube channel ID",
-    };
-  }
-
-  const uploadsPlaylistId = await getUploadsPlaylistId(channelId);
-  if (uploadsPlaylistId) {
-    const playlist = await youtubeFetch<PlaylistItemsResponse>(
-      `/playlistItems?part=snippet&playlistId=${uploadsPlaylistId}&maxResults=1`,
-      0
-    );
-
-    if (playlist.ok) {
+  if (configured) {
+    const fromApi = await fetchRecentVideosFromApi(channelId, 1);
+    if (fromApi.length > 0) {
       return {
         configured: true,
         channelId,
-        videoCount: playlist.data.items?.length ?? 0,
+        videoCount: fromApi.length,
+        source: "api",
         error: null,
       };
     }
-
-    return {
-      configured: true,
-      channelId,
-      videoCount: 0,
-      error: playlist.message,
-    };
   }
 
-  const search = await youtubeFetch<SearchResponse>(
-    `/search?part=snippet&channelId=${channelId}&order=date&type=video&maxResults=1`,
-    0
-  );
-
-  if (!search.ok) {
+  const fromRss = await fetchRecentVideosFromRss(channelId, 1);
+  if (fromRss.length > 0) {
     return {
-      configured: true,
+      configured,
       channelId,
-      videoCount: 0,
-      error: search.message,
+      videoCount: fromRss.length,
+      source: "rss",
+      error: configured
+        ? "API unavailable — public RSS feed is syncing sermons automatically."
+        : null,
     };
   }
 
   return {
-    configured: true,
+    configured,
     channelId,
-    videoCount: search.data.items?.length ?? 0,
-    error: null,
+    videoCount: 0,
+    source: null,
+    error: configured
+      ? "Could not load videos from YouTube API or RSS feed."
+      : "Could not load videos from the YouTube RSS feed.",
   };
 }
 

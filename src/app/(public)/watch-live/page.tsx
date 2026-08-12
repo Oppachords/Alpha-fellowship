@@ -6,7 +6,6 @@ import {
   fetchFeaturedPlayback,
   fetchRecentVideos,
   getYouTubeChannelUrl,
-  isYouTubeConfigured,
   mergeSermonVideos,
 } from "@/lib/integrations/youtube";
 
@@ -19,10 +18,10 @@ export const metadata: Metadata = {
 export const revalidate = 300;
 
 export default async function WatchLivePage() {
-  const configured = isYouTubeConfigured();
-  const [featured, youtubeVideos] = configured
-    ? await Promise.all([fetchFeaturedPlayback(), fetchRecentVideos(50)])
-    : [null, []];
+  const [featured, youtubeVideos] = await Promise.all([
+    fetchFeaturedPlayback(),
+    fetchRecentVideos(50),
+  ]);
 
   const videos = mergeSermonVideos(youtubeVideos);
   const initialVideoId = featured?.video.id ?? videos[0]?.id;
@@ -48,9 +47,8 @@ export default async function WatchLivePage() {
             <div className="rounded-2xl border border-border bg-white p-10 md:p-14 text-center">
               <p className="type-subheading mb-3">No live stream right now</p>
               <p className="type-body-sm mx-auto mb-8 max-w-md text-muted-foreground">
-                {configured
-                  ? "We could not load videos from YouTube. Check YOUTUBE_API_KEY and YOUTUBE_CHANNEL_ID on Vercel, then redeploy."
-                  : "Add YOUTUBE_API_KEY in Vercel environment variables, then redeploy."}
+                No live stream right now. Browse recorded messages on the sermons page
+                or visit our YouTube channel.
               </p>
               <div className="flex flex-wrap justify-center gap-4">
                 <ButtonLink href="/sermons">Browse sermons</ButtonLink>

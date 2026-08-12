@@ -2,13 +2,10 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { AnimatedSection } from "@/components/public/animated-section";
 import { CompactSermonCard } from "@/components/public/sermon-card";
-import {
-  fetchPreviousStreams,
-  isYouTubeConfigured,
-} from "@/lib/integrations/youtube";
+import { fetchPreviousStreams } from "@/lib/integrations/youtube";
 
 export async function PreviousStreamsSection() {
-  const videos = isYouTubeConfigured() ? await fetchPreviousStreams(6) : [];
+  const videos = await fetchPreviousStreams(6);
 
   if (videos.length === 0) return null;
 
