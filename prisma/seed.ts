@@ -216,44 +216,62 @@ async function main() {
     });
   }
 
-  // Super-admin user (change password after first login)
-  const adminEmail =
-    process.env.SEED_ADMIN_EMAIL ?? "admin@alphafellowshipug.com";
-  const adminPassword = process.env.SEED_ADMIN_PASSWORD ?? "ChangeMe123!";
-  const passwordHash = await bcrypt.hash(adminPassword, 12);
-
-  const adminUser = await prisma.user.upsert({
-    where: { email: adminEmail },
-    update: { passwordHash, isActive: true },
-    create: {
-      email: adminEmail,
-      name: "Alpha Fellowship Admin",
-      passwordHash,
-      isActive: true,
-    },
-  });
-
   const superAdminRole = await prisma.role.findUnique({
     where: { slug: "super-admin" },
   });
 
-  if (superAdminRole) {
-    await prisma.userRole.upsert({
-      where: {
-        userId_roleId: {
+  async function ensureSuperAdminUser(input: {
+    email: string;
+    password: string;
+    name: string;
+  }) {
+    const email = input.email.trim().toLowerCase();
+    const passwordHash = await bcrypt.hash(input.password, 12);
+
+    const adminUser = await prisma.user.upsert({
+      where: { email },
+      update: { passwordHash, isActive: true, name: input.name },
+      create: {
+        email,
+        name: input.name,
+        passwordHash,
+        isActive: true,
+      },
+    });
+
+    if (superAdminRole) {
+      await prisma.userRole.upsert({
+        where: {
+          userId_roleId: {
+            userId: adminUser.id,
+            roleId: superAdminRole.id,
+          },
+        },
+        update: {},
+        create: {
           userId: adminUser.id,
           roleId: superAdminRole.id,
         },
-      },
-      update: {},
-      create: {
-        userId: adminUser.id,
-        roleId: superAdminRole.id,
-      },
-    });
+      });
+    }
+
+    console.log(`👤 Admin user seeded: ${email}`);
   }
 
-  console.log(`👤 Admin user seeded: ${adminEmail}`);
+  // Default super-admin (change password after first login)
+  await ensureSuperAdminUser({
+    email: process.env.SEED_ADMIN_EMAIL ?? "admin@alphafellowshipug.com",
+    password: process.env.SEED_ADMIN_PASSWORD ?? "ChangeMe123!",
+    name: "Alpha Fellowship Admin",
+  });
+
+  if (process.env.ALPHA_ADMIN_EMAIL && process.env.ALPHA_ADMIN_PASSWORD) {
+    await ensureSuperAdminUser({
+      email: process.env.ALPHA_ADMIN_EMAIL,
+      password: process.env.ALPHA_ADMIN_PASSWORD,
+      name: process.env.ALPHA_ADMIN_NAME ?? "Alpha Admin",
+    });
+  }
 
   // Ministries (verified from alphafellowshipug.com)
   const ministries = [
