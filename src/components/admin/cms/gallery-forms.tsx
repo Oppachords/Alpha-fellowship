@@ -107,9 +107,11 @@ export function AddGalleryItemForm({ galleryId }: { galleryId: string }) {
       <p className="text-sm font-medium">Add photo to gallery</p>
       <ImageUploadField
         name="imageUrl"
-        label="Photo"
+        label="Photos"
         endpoint="/api/admin/media/upload"
         folder="alpha-fellowship/gallery"
+        multiple
+        maxFiles={20}
       />
       <div className="space-y-1">
         <Label>Caption (optional)</Label>

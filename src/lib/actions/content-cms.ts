@@ -229,33 +229,36 @@ export async function addGalleryItemAction(_prev: ActionState, formData: FormDat
   if (authResult.error) return { error: authResult.error };
 
   const galleryId = formData.get("galleryId") as string;
-  const imageUrl = (formData.get("imageUrl") as string)?.trim();
   const caption = (formData.get("caption") as string)?.trim();
+  const rawUrls = formData.getAll("imageUrl").flatMap((value) => String(value).split(","));
+  const imageUrls = [...new Set(rawUrls.map((value) => value.trim()).filter(Boolean))];
 
-  if (!galleryId || !imageUrl) {
+  if (!galleryId || imageUrls.length === 0) {
     return { error: "Gallery and image are required." };
   }
 
   try {
-    let media = await db.media.findFirst({ where: { url: imageUrl } });
-    if (!media) {
-      media = await db.media.create({
+    for (const imageUrl of imageUrls) {
+      let media = await db.media.findFirst({ where: { url: imageUrl } });
+      if (!media) {
+        media = await db.media.create({
+          data: {
+            filename: imageUrl.split("/").pop() ?? "gallery-image",
+            url: imageUrl,
+            uploadedBy: authResult.session!.user.id,
+            folder: "alpha-fellowship/gallery",
+          },
+        });
+      }
+
+      await db.galleryItem.create({
         data: {
-          filename: imageUrl.split("/").pop() ?? "gallery-image",
-          url: imageUrl,
-          uploadedBy: authResult.session!.user.id,
-          folder: "alpha-fellowship/gallery",
+          galleryId,
+          mediaId: media.id,
+          caption: caption || null,
         },
       });
     }
-
-    await db.galleryItem.create({
-      data: {
-        galleryId,
-        mediaId: media.id,
-        caption: caption || null,
-      },
-    });
 
     revalidateContent(["/gallery", `${ADMIN_BASE_PATH}/gallery`]);
     return { success: true };

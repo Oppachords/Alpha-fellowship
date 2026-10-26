@@ -48,17 +48,18 @@ export default async function GalleryDetailPage({ params }: Props) {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {items.map((item) => (
+              {items.map((item, index) => (
                 <figure
                   key={item.id}
-                  className="rounded-xl overflow-hidden border border-border bg-white"
+                  className="gallery-card gallery-reveal rounded-xl overflow-hidden border border-border bg-white"
+                  style={{ animationDelay: `${index * 90}ms` }}
                 >
                   <div className="relative aspect-[4/3] bg-muted">
                     <Image
                       src={item.url}
                       alt={item.altText ?? gallery.title}
                       fill
-                      className="object-cover"
+                      className="gallery-image object-cover"
                       sizes="(max-width: 768px) 100vw, 33vw"
                     />
                   </div>

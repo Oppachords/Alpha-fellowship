@@ -32,11 +32,12 @@ export default async function GalleryPage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {galleries.map((gallery) => (
+              {galleries.map((gallery, index) => (
                 <Link
                   key={gallery.id}
                   href={`/gallery/${gallery.slug}`}
-                  className="group rounded-2xl border border-border bg-white overflow-hidden hover:border-brand/30 hover:shadow-lg transition-all"
+                  className="gallery-card gallery-reveal group rounded-2xl border border-border bg-white overflow-hidden"
+                  style={{ animationDelay: `${index * 80}ms` }}
                 >
                   <div className="relative aspect-[4/3] bg-muted">
                     {gallery.coverImage ? (
@@ -44,7 +45,7 @@ export default async function GalleryPage() {
                         src={gallery.coverImage}
                         alt={gallery.title}
                         fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        className="gallery-image object-cover"
                         sizes="(max-width: 768px) 100vw, 33vw"
                       />
                     ) : (

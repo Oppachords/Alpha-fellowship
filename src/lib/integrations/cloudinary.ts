@@ -1,18 +1,56 @@
 import { v2 as cloudinary } from "cloudinary";
 
+export function getCloudinaryConfig() {
+  const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+  const apiKey = process.env.CLOUDINARY_API_KEY;
+  const apiSecret = process.env.CLOUDINARY_API_SECRET;
+
+  if (cloudName && apiKey && apiSecret) {
+    return {
+      cloud_name: cloudName,
+      api_key: apiKey,
+      api_secret: apiSecret,
+    };
+  }
+
+  const cloudinaryUrl = process.env.CLOUDINARY_URL;
+  if (!cloudinaryUrl) {
+    return null;
+  }
+
+  try {
+    const url = new URL(cloudinaryUrl);
+    const cloudNameFromUrl = url.hostname;
+    const apiKeyFromUrl = url.username;
+    const apiSecretFromUrl = url.password;
+
+    if (!cloudNameFromUrl || !apiKeyFromUrl || !apiSecretFromUrl) {
+      return null;
+    }
+
+    return {
+      cloud_name: cloudNameFromUrl,
+      api_key: apiKeyFromUrl,
+      api_secret: apiSecretFromUrl,
+    };
+  } catch {
+    return null;
+  }
+}
+
 export function isCloudinaryConfigured() {
-  return Boolean(
-    process.env.CLOUDINARY_CLOUD_NAME &&
-      process.env.CLOUDINARY_API_KEY &&
-      process.env.CLOUDINARY_API_SECRET
-  );
+  return Boolean(getCloudinaryConfig());
 }
 
 function getCloudinary() {
+  const config = getCloudinaryConfig();
+
+  if (!config) {
+    throw new Error("Cloudinary is not configured.");
+  }
+
   cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
+    ...config,
     secure: true,
   });
 
